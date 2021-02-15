@@ -8,7 +8,7 @@ username = getpass.getuser()
 
 captcha_on = True
 
-font = ImageFont.truetype('/usr/share/fonts/opentype/cantarell/Cantarell-Bold.otf', 130)
+font = ImageFont.truetype('/usr/share/fonts/opentype/cantarell/Cantarell-Bold.otf', 110)
 timeup=time.asctime()
 ids_captcha={}
 char_list=[]
@@ -37,11 +37,11 @@ def get_admin(peerid, groupid):
 
 def get_captcha():
     captcha=""
-    for a in range(6):
+    for i in range(6):
         captcha+=random.choice(char_list)
 
     print(captcha)
-    
+    captcha = "OMqmNo"
     im = Image.open("/home/{}/Pictures/captcha.jpg".format(username))
     im1 = Image.open("/home/{}/Pictures/captcha4.jpg".format(username))
     im2 = Image.open("/home/{}/Pictures/captcha5.jpg".format(username))
@@ -49,19 +49,22 @@ def get_captcha():
     im4 = Image.open("/home/{}/Pictures/captcha2.jpg".format(username))
     im5 = Image.open("/home/{}/Pictures/captcha7.jpg".format(username))
     draw_text = ImageDraw.Draw(im)
+    wText, hText = draw_text.textsize(captcha, font)
+    wIm, hIm = im.size
+    #print(wIm, hIm, wText, hText)
     draw_text.text(
-        (60, 160),
+        ((wIm-wText)/2, 160),
         str(captcha),
         font=font,
         fill=(0,0,0,128)
         )
-    Image.blend(Image.blend(Image.blend(Image.blend(Image.blend(im, im1, 50), im3, 50), im3 , 50), im4, 50),im5 , 50).save('/home/ubuntu/Pictures/captcha3.jpg')
+    Image.blend(Image.blend(Image.blend(Image.blend(Image.blend(im, im1, 50), im2, 50), im3 , 50), im4, 50),im5 , 50).save('/home/{}/Pictures/captcha3.jpg'.format(username))
 
-    im.save('/home/ubuntu/Pictures/captcha1.jpg')
+    im.save('/home/{}/Pictures/captcha1.jpg'.format(username))
 
 
     upload = vk_api.VkUpload(vk)
-    photo = upload.photo_messages("/home/ubuntu/Pictures/captcha3.jpg")
+    photo = upload.photo_messages("/home/{}/Pictures/captcha3.jpg".format(username))
     owner_id = photo[0]['owner_id']
     photo_id = photo[0]['id']
     access_key = photo[0]['access_key']
@@ -126,6 +129,8 @@ while 1:
                     event.object["message"]["text"] != ids_captcha[str(event.object["message"]["from_id"])]
                 ):
 
+                    ids_captcha.pop(str(event.object["message"]["from_id"]))
+
                     vk.messages.send(
                         peer_id=event.object["message"]["peer_id"], 
                         message = "пошел нахуй фурриеб", 
@@ -136,11 +141,13 @@ while 1:
                         chat_id=event.object["message"]["peer_id"]-2000000000, 
                         user_id=event.object["message"]["from_id"]
                     )
-                    vkAdmin.groups.ban(
-			            group_id=GROUP_ID,
-			            owner_id=event.object["message"]["from_id"]
-		            )
-                    ids_captcha.pop(str(event.object["message"]["from_id"]))
+
+                    if event["message"]["peer_id"] == 2000000001:
+                        vkAdmin.groups.ban(
+                            group_id=GROUP_ID,
+                            owner_id=event.object["message"]["from_id"]
+                        )
+
 
                 
                 elif (
@@ -163,7 +170,7 @@ while 1:
                                 chat_id=event.object["message"]["peer_id"]-2000000000, 
                                 user_id=event.object["message"]["fwd_messages"][0]["from_id"]
                             )
-                        
+
                         vk.messages.send(
                             peer_id=event.object["message"]["peer_id"],
                             message="кикаю хохлинку...",
