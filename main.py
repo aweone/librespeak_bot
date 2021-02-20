@@ -41,7 +41,7 @@ def get_captcha():
         captcha+=random.choice(char_list)
 
     print(captcha)
-    captcha = "OMqmNo"
+
     im = Image.open("/home/{}/Pictures/captcha.jpg".format(username))
     im1 = Image.open("/home/{}/Pictures/captcha4.jpg".format(username))
     im2 = Image.open("/home/{}/Pictures/captcha5.jpg".format(username))
