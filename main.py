@@ -1,4 +1,4 @@
-import vk_api, random, time, json, getpass
+import vk_api, random, time, json, getpass, json
 from PIL import Image, ImageDraw, ImageFont
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from auth import vk, longpoll, vkAdmin, GROUP_ID
@@ -7,6 +7,16 @@ username = getpass.getuser()
 
 
 captcha_on = True
+
+
+
+with open("settings.json") as f:
+    settings = json.load(f)
+
+with open("casino.json") as f:
+    casino = json.load(f)
+
+print(settings)
 
 font = ImageFont.truetype('/usr/share/fonts/opentype/cantarell/Cantarell-Bold.otf', 110)
 timeup=time.asctime()
@@ -79,204 +89,396 @@ while 1:
     try:
         for event in longpoll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
-                print((event.t))
-                #print(event.object)         
+
+
+                #print(event.object["message"]["text"].split()[0] == "/set")
+                print((event))         
                     #print
                     #vk.messages.send(peer_id=event.peer_id, message = captcha_value[1], random_id=random.randint(1,999999), attachment=captcha_value[0])
                     
                     #if event.raw[6].get("source_act") == "chat_invite_user_by_link":
                 if (
-                    captcha_on and
-                    "action" in event.object["message"] and 
-                    event.object["message"]["action"]["type"] == "chat_invite_user_by_link"
+                    event.from_chat
                 ):
+                    if (
+                        "action" in event.object["message"]
+                    ):
 
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"], 
-                        message=("новый [id"+str(event.object["message"]["from_id"])+"|пользователь] присоединился по ссылке"), 
-                        random_id=random.randint(1,999999)
-                    )
-                    print("новый юзер")
-                        #   if event.object["message"]["text"] == "1234":
-                    captcha_value = get_captcha()
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"], 
-                        message="пройдите капчу или кик", 
-                        random_id=random.randint(1,999999), 
-                        attachment=captcha_value[0]
-                    )
-                    ids_captcha[str(event.object["message"]["from_id"])]=captcha_value[1]
+                        if (
+                            event.object["message"]["action"]["type"] == "chat_invite_user_by_link"
+                            and (settings.get(str(event.object["message"]["peer_id"] - 2000000000)).get("captcha_on")) == "True"
+                        ):
 
-                    #print(ids_captcha)
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = ("новый [id"+str(event.object["message"]["from_id"])+"|пользователь] присоединился по ссылке"), 
+                                random_id = random.randint(1,999999)
+                            )
+                            #print("новый юзер")
+                            #   if event.object["message"]["text"] == "1234":
+                            captcha_value = get_captcha()
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = "пройдите капчу или кик", 
+                                random_id = random.randint(1,999999), 
+                                attachment = captcha_value[0]
+                            )
+                            ids_captcha[str(event.object["message"]["from_id"])] = captcha_value[1]
+
+                        #print(ids_captcha)
+                        elif (
+                            event.object["message"]["action"]["type"] == "chat_kick_user"
+                            and (settings.get(str(event.object["message"]["peer_id"] - 2000000000)).get("greeting_on")) == "True"
+                        ):
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = "еще один [id"+str(event.object["message"]["action"]["member_id"])+"|хохол] покидает нас, ура!", 
+                                random_id = random.randint(1,999999)
+                            )
+
+                        elif (
+                            event.object["message"]["action"]["type"] == "chat_invite_user"
+                            and (settings.get(str(event.object["message"]["peer_id"] - 2000000000)).get("greeting_on")) == "True"
+                        ):
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = "еще один [id"+str(event.object["message"]["action"]["member_id"])+"|хохол] присоединился...", 
+                                random_id = random.randint(1,999999)
+                            )
+                    
+                    elif (
+                        "text" in event.object["message"] and
+                        event.object["message"]["text"].split()[0] == "/казино" and
+                        settings.get(str(event.object["message"]["peer_id"] - 2000000000)).get("casino_on") == "True"
+                    ):
+                        with open("casino.json") as f:
+                            casino = json.load(f)
+                        gain = 0
+                        rate = 0
+                        if str(event.object["message"]["from_id"]) not in casino:
+                            casino[str(event.object["message"]["from_id"])] = "100"
+                        balance = int(casino[str(event.object["message"]["from_id"])])
+                        rate = int(event.object["message"]["text"].split()[1])
+                        print(123)
+                        a = random.randint(1, 9)
+                        b = random.randint(1, 9)
+                        c = random.randint(1, 9)
+
+                        if balance < rate:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "лох, денег нет",
+                                random_id = random.randint(1, 999999)
+                            )
+                        elif rate <= 0:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "нормальную ставку сделай, кловн",
+                                random_id = random.randint(1, 999999)
+                            )
+
+                        elif a == b or b == c or a == c:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
+
+                            gain = rate * random.choice([a, b, c])
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "о, ты выиграл, твой выиргрыш {} руб".format(gain),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance + gain)
+                        elif a == b == c:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
+
+                            gain = rate * a * b * c
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "ого, сорвал куш, выиргрыш {} руб".format(gain),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance + gain)
+
+                        else:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
+
+                            balance = balance - rate
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "ахахаха, лох, проиграл,  твой баланс {} руб".format(balance),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance)
 
                         
-                elif (
-                    str(event.object["message"]["from_id"]) in ids_captcha and
-                    event.object["message"]["text"] == ids_captcha[str(event.object["message"]["from_id"])]
-                ):
+                            
+                    elif (
+                        str(event.object["message"]["from_id"]) in ids_captcha and
+                        event.object["message"]["text"] == ids_captcha[str(event.object["message"]["from_id"])]
+                    ):
 
-                    ids_captcha.pop(str(event.object["message"]["from_id"]))
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"], 
-                        message = "проверка пройдена", 
-                        random_id=random.randint(1,999999)
-                    )
-
-
-                    #print( ids_captcha[str(event.user_id)] )
-                elif (
-                    str(event.object["message"]["from_id"]) in ids_captcha and
-                    event.object["message"]["text"] != ids_captcha[str(event.object["message"]["from_id"])]
-                ):
-
-                    ids_captcha.pop(str(event.object["message"]["from_id"]))
-
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"], 
-                        message = "пошел нахуй фурриеб", 
-                        random_id=random.randint(1,999999)
-                    )
-
-                    vk.messages.removeChatUser(
-                        chat_id=event.object["message"]["peer_id"]-2000000000, 
-                        user_id=event.object["message"]["from_id"]
-                    )
-
-                    if event["message"]["peer_id"] == 2000000001:
-                        vkAdmin.groups.ban(
-                            group_id=GROUP_ID,
-                            owner_id=event.object["message"]["from_id"]
+                        ids_captcha.pop(str(event.object["message"]["from_id"]))
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"], 
+                            message = "проверка пройдена", 
+                            random_id = random.randint(1,999999)
                         )
 
 
-                
-                elif (
-                    event.object["message"]["text"] == "/ban"
-                ):
-                    if (
+                        #print( ids_captcha[str(event.user_id)] )
+                    
+                    elif (
+                        str(event.object["message"]["from_id"]) in ids_captcha and
+                        event.object["message"]["text"] != ids_captcha[str(event.object["message"]["from_id"])]
+                    ):
+
+                        ids_captcha.pop(str(event.object["message"]["from_id"]))
+
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"], 
+                            message = "пошел нахуй фурриеб", 
+                            random_id = random.randint(1,999999)
+                        )
+
+                        vk.messages.removeChatUser(
+                            chat_id = event.object["message"]["peer_id"]-2000000000, 
+                            user_id = event.object["message"]["from_id"]
+                        )
+
+                        if event["message"]["peer_id"] == 2000000001:
+                            vkAdmin.groups.ban(
+                                group_id = GROUP_ID,
+                                owner_id = event.object["message"]["from_id"]
+                            )
+            
+                    elif (
                         event.object["message"]["from_id"] in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
                     ):
+
                         if (
-                            "reply_message" in event.object["message"]
+                            event.object["message"]["text"] == "/ban"
                         ):
-                            vk.messages.removeChatUser(
-                                chat_id=event.object["message"]["peer_id"]-2000000000, 
-                                user_id=event.object["message"]["reply_message"]["from_id"]
+
+                            if (
+                                "reply_message" in event.object["message"]
+                            ):
+                                vk.messages.removeChatUser(
+                                    chat_id = event.object["message"]["peer_id"] - 2000000000, 
+                                    user_id = event.object["message"]["reply_message"]["from_id"]
+                                )
+                            elif (
+                                "fwd_messages" in event.object["message"]
+                            ): 
+                                vk.messages.removeChatUser(
+                                    chat_id = event.object["message"]["peer_id"] - 2000000000, 
+                                    user_id = event.object["message"]["fwd_messages"][0]["from_id"]
+                                )
+
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "кикаю хохлинку...",
+                                random_id = random.randint(1, 999999)
+                            )
+
+                        elif (
+                            event.object["message"]["text"] == "/settings" and
+                            event.object["message"]["from_id"] in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
+                        ):
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = str(settings.get(str(event.object["message"]["peer_id"] - 2000000000))),
+                                random_id = random.randint(1, 999999)
+                            )
+                            
+                        elif (
+                            "text" in event.object["message"] and
+                            event.object["message"]["text"].split()[0] == "/set" and
+                            event.object["message"]["from_id"] in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
+                        ):
+
+                            params = event.object["message"]["text"].replace("/set", "").split()
+                            if params[0] in settings.get(str(event.object["message"]["peer_id"] - 2000000000)):
+                                settings[str((event.object["message"]["peer_id"] - 2000000000))].update({params[0]:params[1]})
+                                with open('settings.json', 'w') as f:
+                                    json.dump(settings, f)
+
+                        elif (
+                            event.object["message"]["text"] == "/setToDefault" and
+                            event.object["message"]["from_id"] in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
+                        ):
+                            settings[str(event.object["message"]["peer_id"] - 2000000000)] = {"captcha_on":"True", "casino_on":"False", "greeting_on":"False"}
+                            with open('settings.json', 'w') as f:
+                                json.dump(settings, f)
+
+                    elif (
+                        event.object["message"]["text"] == "/admins" and
+                        event.object["message"]["from_id"] == 213045391
+                    ):
+
+                        vk.messages.send(
+                            peer_id =event.object["message"]["peer_id"],
+                            message = "админы данного чата: "+get_admin(event.object["message"]["peer_id"], GROUP_ID)[0],
+                            random_id = random.randint(1,999999),
+                            disable_mentions = 1
+                        )
+
+                    elif (
+                        event.object["message"]["attachments"] and
+                        event.object["message"]["attachments"][0]["type"] == "audio_message" and
+                        random.choices([True, False], weights = (25, 75), k=2)[0]
+                    ):
+
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"],
+                            message = "хрю-хрю",
+                            random_id = random.randint(1, 999999)
+                        )
+
+                    elif (
+                        "навальный" in event.object["message"]["text"].lower() and
+                        random.choices([True, False], weights = (25, 75), k = 2)[0]
+                    ):
+
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"],
+                            random_id = random.randint(1, 999999),
+                            attachment = "photo-202215029_457239052"
+                        )
+
+                    elif (
+                        event.object["message"]["text"] == "/ban"
+                        and event.object["message"]["from_id"] not in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
+                    ):
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"],
+                            message = "угомонись, хохлинка... кикать могут только админы",
+                            random_id = random.randint(1, 999999)
+                        )
+
+                    elif (
+                        event.object["message"]["from_id"] == 213045391
+                    ):
+
+
+                        if (
+                            event.object["message"]["text"] == "/инф"
+                        ):
+
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = "бот работает, аптайм c "+timeup, 
+                                random_id = random.randint(1,999999)
+                            )
+
+
+                        elif (
+                            event.object["message"]["text"] == "/капча"
+                        ):
+                            
+                            captcha_value = get_captcha()
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = captcha_value[1], 
+                                random_id = random.randint(1,999999), 
+                                attachment = captcha_value[0]
                             )
                         elif (
-                            "fwd_messages" in event.object["message"]
-                        ): 
-                            vk.messages.removeChatUser(
-                                chat_id=event.object["message"]["peer_id"]-2000000000, 
-                                user_id=event.object["message"]["fwd_messages"][0]["from_id"]
+                            event.object["message"]["from_id"] == 213045391 and
+                            event.object["message"]["text"].split()[0] == "/exec"
+                        ):
+
+                            command = event.object["message"]["text"].replace("/exec ", "")
+                            exec(str(command))
+                            print(command)
+                elif (
+                    event.from_user
+                ):
+                    print("text" in event.object["message"], event.object["message"]["text"].split()[0] == "/казино")
+                    if (
+                        "text" in event.object["message"] and
+                        event.object["message"]["text"].split()[0] == "/казино"
+                    ):
+                        with open("casino.json") as f:
+                            casino = json.load(f)
+                        gain = 0
+                        rate = 0
+                        if str(event.object["message"]["from_id"]) not in casino:
+                            casino[str(event.object["message"]["from_id"])] = "100"
+                        balance = int(casino[str(event.object["message"]["from_id"])])
+                        rate = int(event.object["message"]["text"].split()[1])
+                        print(123)
+                        a = random.randint(1, 9)
+                        b = random.randint(1, 9)
+                        c = random.randint(1, 9)
+
+                        if balance < rate:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "лох, денег нет",
+                                random_id = random.randint(1, 999999)
+                            )
+                        elif rate <= 0:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "нормальную ставку сделай, кловн",
+                                random_id = random.randint(1, 999999)
                             )
 
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"],
-                            message="кикаю хохлинку...",
-                            random_id=random.randint(1, 999999)
-                        )
-                    elif (
-                        event.object["message"]["from_id"] not in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
-                    ):
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"],
-                            message="угомонись, хохлинка... кикать могут только админы",
-                            random_id=random.randint(1, 999999)
-                        )
+                        elif a == b or b == c or a == c:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
 
-                elif (
-                    event.object["message"]["text"] == "/admins" and
-                    event.object["message"]["from_id"] == 213045391
-                ):
+                            gain = rate * random.choice([a, b, c])
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "о, ты выиграл, твой выиргрыш {} руб".format(gain),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance + gain)
+                        elif a == b == c:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
 
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"],
-                        message="админы данного чата: "+get_admin(event.object["message"]["peer_id"], GROUP_ID)[0],
-                        random_id=random.randint(1,999999),
-                        disable_mentions = 1
-                    )
+                            gain = rate * a * b * c
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "ого, сорвал куш, выиргрыш {} руб".format(gain),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance + gain)
 
-                
-                elif (
-                    event.object["message"]["attachments"] and
-                    event.object["message"]["attachments"][0]["type"] == "audio_message" and
-                    random.choices([True, False], weights = (25, 75), k=2)[0]
-                    ):
+                        else:
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = (str(a)+" "+str(b)+" "+str(c)), 
+                                random_id = random.randint(1,999999)
+                            )
 
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"],
-                        message = "хрю-хрю",
-                        random_id=0
-                    )
-
-                elif (
-                    "навальный" in event.object["message"]["text"].lower() and
-                    random.choices([True, False], weights = (25, 75), k=2)[0]
-                    ):
-                    vk.messages.send(
-                        peer_id=event.object["message"]["peer_id"],
-                        random_id=0,
-                        attachment="photo-202215029_457239052"
-                    )
-                
-                elif (
-                    "action" in event.object["message"]
-                ):
-                    if (
-                        event.object["message"]["action"]["type"] == "chat_kick_user"
-                    ):
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"], 
-                            message = "еще один [id"+str(event.object["message"]["action"]["member_id"])+"|хохол] покидает нас, ура!", 
-                            random_id=random.randint(1,999999)
-                        )
-
-                    elif (
-                        event.object["message"]["action"]["type"] == "chat_invite_user"
-                    ):
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"], 
-                            message = "еще один [id"+str(event.object["message"]["action"]["member_id"])+"|хохол] присоединился...", 
-                            random_id=random.randint(1,999999)
-                        )
-
-                elif (
-                    event.object["message"]["from_id"] == 213045391
-                ):
-
-
-                    if (
-                        event.object["message"]["text"] == "/инф"
-                    ):
-
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"], 
-                            message="бот работает, аптайм c "+timeup, 
-                            random_id=random.randint(1,999999)
-                        )
-
-
-                    elif (
-                        event.object["message"]["text"] == "/капча"
-                    ):
-                        
-                        captcha_value = get_captcha()
-                        vk.messages.send(
-                            peer_id=event.object["message"]["peer_id"], 
-                            message=captcha_value[1], 
-                            random_id=random.randint(1,999999), 
-                            attachment=captcha_value[0]
-                        )
-                    elif (
-                        event.object["message"]["from_id"] == 213045391 and
-                        event.object["message"]["text"].split()[0] == "/exec"
-                    ):
-
-                        command = event.object["message"]["text"].replace("/exec ", "")
-                        exec(str(command))
-                        print(command)
+                            balance = balance - rate
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"],
+                                message = "ахахаха, лох, проиграл,  твой баланс {} руб".format(balance),
+                                random_id = random.randint(1, 999999)
+                            )
+                            casino[str(event.object["message"]["from_id"])] = str(balance)
 
 
     except Exception as error:
-        print(error)
+       print(error)
