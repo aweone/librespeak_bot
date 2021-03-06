@@ -351,7 +351,7 @@ while 1:
                                         random_id = random.randint(1,999999)
                                     )
                                 for screen_name in event.object["message"]["text"].replace("/ban", "").replace("[id", "").replace("]", "").split():
-                                    print(event.object["message"]["text"].replace("/ban", "").split())
+                                    #print(event.object["message"]["text"].replace("/ban", "").split())
                                     user_id = ""
                                     for char in screen_name:
                                         print(screen_name)
@@ -359,7 +359,7 @@ while 1:
                                             user_id+=char
                                         else:
                                             break
-                                    print(get_admin(event.object["message"]["peer_id"], GROUP_ID)[1])
+                                    #print(get_admin(event.object["message"]["peer_id"], GROUP_ID)[1])
                                     try:
                                         vk.messages.removeChatUser(
                                             chat_id = event.object["message"]["peer_id"] - 2000000000, 
@@ -563,8 +563,7 @@ while 1:
                     
                     if (
                         "text" in event.object["message"] and
-                        event.object["message"]["text"].split()[0] == "/баланс" and
-                        settings.get(str(event.object["message"]["peer_id"] - 2000000000)).get("casino_on") == "True"
+                        event.object["message"]["text"].split()[0] == "/баланс"
                     ):
                         with open("casino.json") as f:
                             casino = json.load(f)
