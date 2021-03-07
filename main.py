@@ -78,6 +78,13 @@ def get_captcha():
     print(attachment)
     return attachment, captcha
 
+print(settings)
+
+vk.messages.send(
+    peer_id = 2000000004,
+    message = "нормальную ставку сделай, кловн",
+    random_id = random.randint(1, 999999)
+)
 
 
 while 1:
@@ -138,6 +145,45 @@ while 1:
                                 peer_id = event.object["message"]["peer_id"], 
                                 message = "еще один [id"+str(event.object["message"]["action"]["member_id"])+"|хохол] присоединился...", 
                                 random_id = random.randint(1,999999)
+                            )
+
+                    elif (
+                        str(event.object["message"]["from_id"]) in ids_captcha and
+                        event.object["message"]["text"] == ids_captcha[str(event.object["message"]["from_id"])]
+                    ):
+
+                        ids_captcha.pop(str(event.object["message"]["from_id"]))
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"], 
+                            message = "проверка пройдена", 
+                            random_id = random.randint(1,999999)
+                        )
+
+
+                        #print( ids_captcha[str(event.user_id)] )
+                    
+                    elif (
+                        str(event.object["message"]["from_id"]) in ids_captcha and
+                        event.object["message"]["text"] != ids_captcha[str(event.object["message"]["from_id"])]
+                    ):
+
+                        ids_captcha.pop(str(event.object["message"]["from_id"]))
+
+                        vk.messages.send(
+                            peer_id = event.object["message"]["peer_id"], 
+                            message = "пошел нахуй фурриеб", 
+                            random_id = random.randint(1,999999)
+                        )
+
+                        vk.messages.removeChatUser(
+                            chat_id = event.object["message"]["peer_id"]-2000000000, 
+                            user_id = event.object["message"]["from_id"]
+                        )
+
+                        if event["message"]["peer_id"] == 2000000001:
+                            vkAdmin.groups.ban(
+                                group_id = GROUP_ID,
+                                owner_id = event.object["message"]["from_id"]
                             )
                     
                     if (
@@ -246,46 +292,6 @@ while 1:
                             random_id = random.randint(1, 999999)
                         )
 
-                            
-                    if (
-                        str(event.object["message"]["from_id"]) in ids_captcha and
-                        event.object["message"]["text"] == ids_captcha[str(event.object["message"]["from_id"])]
-                    ):
-
-                        ids_captcha.pop(str(event.object["message"]["from_id"]))
-                        vk.messages.send(
-                            peer_id = event.object["message"]["peer_id"], 
-                            message = "проверка пройдена", 
-                            random_id = random.randint(1,999999)
-                        )
-
-
-                        #print( ids_captcha[str(event.user_id)] )
-                    
-                    if (
-                        str(event.object["message"]["from_id"]) in ids_captcha and
-                        event.object["message"]["text"] != ids_captcha[str(event.object["message"]["from_id"])]
-                    ):
-
-                        ids_captcha.pop(str(event.object["message"]["from_id"]))
-
-                        vk.messages.send(
-                            peer_id = event.object["message"]["peer_id"], 
-                            message = "пошел нахуй фурриеб", 
-                            random_id = random.randint(1,999999)
-                        )
-
-                        vk.messages.removeChatUser(
-                            chat_id = event.object["message"]["peer_id"]-2000000000, 
-                            user_id = event.object["message"]["from_id"]
-                        )
-
-                        if event["message"]["peer_id"] == 2000000001:
-                            vkAdmin.groups.ban(
-                                group_id = GROUP_ID,
-                                owner_id = event.object["message"]["from_id"]
-                            )
-            
                     if (
                         event.object["message"]["from_id"] in get_admin(event.object["message"]["peer_id"], GROUP_ID)[1]
                     ):
