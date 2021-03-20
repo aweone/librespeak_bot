@@ -1,33 +1,33 @@
-import json, getpass, vk_api
+import toml, vk_api, os, sys
 from vk_api.bot_longpoll import VkBotLongPoll
+
+repo_path = os.path.dirname(__file__)
 
 print("INFO: reading settings file...")
 
 try:
-    with open('/home/{}/.config/librespeak_bot/settings.json'.format(getpass.getuser()), 'r', encoding='utf-8') as f: 
-        settings = json.load(f)
+    with open(os.path.join(repo_path, "config.toml"), 'r', encoding='utf-8') as f: 
+        config = toml.load(f)
 except Exception as error:
-    print("ERROR: failed reading settings file")
+    print(f"ERROR: failed reading {os.path.join(repo_path, 'config.toml')} file")
     print(error)
-
-print("INFO: reading is successful!")
+    exit(1)
+    
+print("INFO: config loaded successfully!")
 
 print("INFO: authentication...")
 GROUP_ID = settings.get("ADMIN").get("GROUP_ID")
-#Bot auth
+
 try:
 
-    vk_session = vk_api.VkApi(token=settings.get("BOT").get("BOT_TOKEN"))
+    vk_session = vk_api.VkApi(token=settings["group"]["token"])
     vk = vk_session.get_api()
-    longpoll = VkBotLongPoll(vk_session, settings.get("BOT").get("BOT_ID"))
+    longpoll = VkBotLongPoll(vk_session, settings["group"]["id"])
 
-    vk_sessionAdmin = vk_api.VkApi(token= settings.get("ADMIN").get("ADMIN_TOKEN"))
+    vk_sessionAdmin = vk_api.VkApi(token= settings["user"]["token"])
     vkAdmin = vk_sessionAdmin.get_api()
     print("INFO: authentication is successful!")
 
 except Exception as error:
     print("ERROR: failed auth")
     print(error)
-
-
-#vk.messages.send(peer_id=2000000001, message = "тест", random_id=0)

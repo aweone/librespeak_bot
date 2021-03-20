@@ -1,19 +1,17 @@
+#!/usr/bin/env python3
 import vk_api, random, time, json, getpass, json
 from PIL import Image, ImageDraw, ImageFont
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from auth import vk, longpoll, vkAdmin, GROUP_ID
 
-username = getpass.getuser()
-
+repo_path = os.path.dirname(__file__)
 
 captcha_on = True
 
-
-
-with open("settings.json") as f:
+with open(os.path.join(repo_path,'settings.json') as f:
     settings = json.load(f)
 
-font = ImageFont.truetype('/usr/share/fonts/opentype/cantarell/Cantarell-Bold.otf', 110)
+font = ImageFont.truetype(os.path.join(repo_path,'assets/Cantarell-Bold.otf'), 110)
 timeup=time.asctime()
 ids_captcha={}
 char_list=[]
@@ -35,48 +33,42 @@ def get_admin(peerid, groupid):
             admins.append(member["member_id"])
             if member["member_id"] > 0:
                 admins_str+=("\n @id"+str(member["member_id"]))
-            #print(member["member_id"])
-    #print(members)
     return admins_str, admins
 
 
 def get_captcha():
-    captcha=""
+    captcha = ""
     for i in range(6):
         captcha+=random.choice(char_list)
 
     print(captcha)
 
-    im = Image.open("/home/{}/Pictures/captcha.jpg".format(username))
-    im1 = Image.open("/home/{}/Pictures/captcha4.jpg".format(username))
-    im2 = Image.open("/home/{}/Pictures/captcha5.jpg".format(username))
-    im3 = Image.open("/home/{}/Pictures/captcha6.jpg".format(username))
-    im4 = Image.open("/home/{}/Pictures/captcha2.jpg".format(username))
-    im5 = Image.open("/home/{}/Pictures/captcha7.jpg".format(username))
+    im = Image.open("/home/{}/Pictures/captcha.jpg")
+    im1 = Image.open("/home/{}/Pictures/captcha1.jpg")
+    im2 = Image.open("/home/{}/Pictures/captcha2.jpg")
+    im3 = Image.open("/home/{}/Pictures/captcha3.jpg")
+    im4 = Image.open("/home/{}/Pictures/captcha4.jpg")
+    im5 = Image.open("/home/{}/Pictures/captcha5.jpg")
     draw_text = ImageDraw.Draw(im)
     wText, hText = draw_text.textsize(captcha, font)
     wIm, hIm = im.size
-    #print(wIm, hIm, wText, hText)
     draw_text.text(
         ((wIm-wText)/2, 160),
         str(captcha),
         font=font,
         fill=(0,0,0,128)
         )
-    Image.blend(Image.blend(Image.blend(Image.blend(Image.blend(im, im1, 50), im2, 50), im3 , 50), im4, 50),im5 , 50).save('/home/{}/Pictures/captcha3.jpg'.format(username))
+    with tempfile.NamedTemporaryFile(suffix='.png') as f:
+        Image.blend(Image.blend(Image.blend(Image.blend(Image.blend(im, im1, 50), im2, 50), im3 , 50), im4, 50),im5 , 50).save(f.name)
 
-    im.save('/home/{}/Pictures/captcha1.jpg'.format(username))
-
-
-    upload = vk_api.VkUpload(vk)
-    photo = upload.photo_messages("/home/{}/Pictures/captcha3.jpg".format(username))
-    owner_id = photo[0]['owner_id']
-    photo_id = photo[0]['id']
-    access_key = photo[0]['access_key']
-    attachment = f'photo{owner_id}_{photo_id}_{access_key}'
-    #vk.messages.send(peer_id=event.peer_id, random_id=0, attachment=attachment)
-    print(attachment)
-    return attachment, captcha
+        upload = vk_api.VkUpload(vk)
+        photo = upload.photo_messages(f.name)
+        owner_id = photo[0]['owner_id']
+        photo_id = photo[0]['id']
+        access_key = photo[0]['access_key']
+        attachment = f'photo{owner_id}_{photo_id}_{access_key}'
+        f.close()
+        return attachment, captcha
 
 print(settings)
 
