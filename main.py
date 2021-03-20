@@ -8,7 +8,7 @@ repo_path = os.path.dirname(__file__)
 
 captcha_on = True
 
-with open(os.path.join(repo_path,'settings.json') as f:
+with open('settings.json') as f:
     settings = json.load(f)
 
 font = ImageFont.truetype(os.path.join(repo_path,'assets/Cantarell-Bold.otf'), 110)
