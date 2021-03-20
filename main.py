@@ -1,9 +1,10 @@
-import vk_api, random, time, json, getpass, json
+import vk_api, random, time, json
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from auth import vk, longpoll, vkAdmin, GROUP_ID
 
-username = getpass.getuser()
+username = str(Path.home())
 
 
 captcha_on = True
@@ -47,12 +48,12 @@ def get_captcha():
 
     print(captcha)
 
-    im = Image.open("/home/{}/Pictures/captcha.jpg".format(username))
-    im1 = Image.open("/home/{}/Pictures/captcha4.jpg".format(username))
-    im2 = Image.open("/home/{}/Pictures/captcha5.jpg".format(username))
-    im3 = Image.open("/home/{}/Pictures/captcha6.jpg".format(username))
-    im4 = Image.open("/home/{}/Pictures/captcha2.jpg".format(username))
-    im5 = Image.open("/home/{}/Pictures/captcha7.jpg".format(username))
+    im = Image.open("{}/Pictures/captcha.jpg".format(username))
+    im1 = Image.open("{}/Pictures/captcha4.jpg".format(username))
+    im2 = Image.open("{}/Pictures/captcha5.jpg".format(username))
+    im3 = Image.open("{}/Pictures/captcha6.jpg".format(username))
+    im4 = Image.open("{}/Pictures/captcha2.jpg".format(username))
+    im5 = Image.open("{}/Pictures/captcha7.jpg".format(username))
     draw_text = ImageDraw.Draw(im)
     wText, hText = draw_text.textsize(captcha, font)
     wIm, hIm = im.size
@@ -63,13 +64,22 @@ def get_captcha():
         font=font,
         fill=(0,0,0,128)
         )
-    Image.blend(Image.blend(Image.blend(Image.blend(Image.blend(im, im1, 50), im2, 50), im3 , 50), im4, 50),im5 , 50).save('/home/{}/Pictures/captcha3.jpg'.format(username))
+    Image.blend(
+            Image.blend(
+                Image.blend(
+                    Image.blend(
+                        Image.blend(
+                            im, im1, 50),
+                        im2, 50),
+                    im3 , 50),
+                im4, 50),
+            im5 , 50).save('{}/Pictures/captcha3.jpg'.format(username))
 
-    im.save('/home/{}/Pictures/captcha1.jpg'.format(username))
+    im.save('{}/Pictures/captcha1.jpg'.format(username))
 
 
     upload = vk_api.VkUpload(vk)
-    photo = upload.photo_messages("/home/{}/Pictures/captcha3.jpg".format(username))
+    photo = upload.photo_messages("{}/Pictures/captcha3.jpg".format(username))
     owner_id = photo[0]['owner_id']
     photo_id = photo[0]['id']
     access_key = photo[0]['access_key']
@@ -78,13 +88,7 @@ def get_captcha():
     print(attachment)
     return attachment, captcha
 
-print(settings)
-
-vk.messages.send(
-    peer_id = 2000000004,
-    message = "нормальную ставку сделай, кловн",
-    random_id = random.randint(1, 999999)
-)
+#print(settings)
 
 
 while 1:
@@ -585,3 +589,4 @@ while 1:
 
     except Exception as error:
         print(error)
+
