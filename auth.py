@@ -1,15 +1,19 @@
-import json, getpass, vk_api
+import json, vk_api
+from pathlib import Path
 from vk_api.bot_longpoll import VkBotLongPoll
 
 print("INFO: reading settings file...")
 
+
 try:
-    with open('/home/{}/.config/librespeak_bot/settings.json'.format(getpass.getuser()), 'r', encoding='utf-8') as f: 
+    with open('{}/.config/librespeak_bot/settings.json'.format(str(Path.home())), 'r', encoding='utf-8') as f: 
         settings = json.load(f)
 except Exception as error:
-    print("ERROR: failed reading settings file")
+    print("ERROR: failed reading settings file...")
+    print("INFO: check settings file...")
     print(error)
-    exit()
+    input()
+    exit(1)
 
 print("INFO: reading is successful!")
 
