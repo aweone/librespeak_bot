@@ -9,6 +9,7 @@ try:
 except Exception as error:
     print("ERROR: failed reading settings file")
     print(error)
+    exit()
 
 print("INFO: reading is successful!")
 
