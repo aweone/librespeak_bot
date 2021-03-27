@@ -229,7 +229,7 @@ while 1:
                         except Exception as error:
                             vk.messages.send(
                                 peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "выбери" завершилась с ошибкой\n {error}', 
+                                message = f'OOOPS... ошибочка\n команда "выбери" завершилась с ошибкой\n {error}', 
                                 random_id = random.randint(1,999999)
                             )
                     if (
@@ -253,7 +253,7 @@ while 1:
                         except Exception as error:
                             vk.messages.send(
                                 peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "кто" завершилась с ошибкой\n {error}', 
+                                message = f'OOOPS... ошибочка\n команда "кто" завершилась с ошибкой\n {error}', 
                                 random_id = random.randint(1,999999)
                             )
                     if (
@@ -278,7 +278,7 @@ while 1:
                         except Exception as error:
                             vk.messages.send(
                                 peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка, команда "у кого" завершилась с ошибкой\n {error}', 
+                                message = f'OOOPS... ошибочка\n команда "у кого" завершилась с ошибкой\n {error}', 
                                 random_id = random.randint(1,999999)
                             )
                     if (
@@ -303,7 +303,7 @@ while 1:
                         except Exception as error:
                             vk.messages.send(
                                 peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "кому" завершилась с ошибкой\n {error}', 
+                                message = f'OOOPS... ошибочка\n команда "кому" завершилась с ошибкой\n {error}', 
                                 random_id = random.randint(1,999999)
                             )
                 if (
