@@ -35,7 +35,7 @@ who = ["у кого", "кто"]
 need = ["нужно", "требуется", "необходимо", "надо"]
 info = ["/help", "/помощь", "help", "помощь"]
 while 1:
-    if True:
+    try:
         for event in longpoll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 text = event.object["message"]["text"]
@@ -241,7 +241,10 @@ while 1:
                         and settings[str(peer_id - 2000000000)]["qr"] == "True"
                     )
                 ):
-                    message("ваш qrcode",attachment=qrgen(text[3:]))
+                    try:
+                        message("ваш qrcode",attachment=qrgen(text[3:]))
+                    except Exception as error:
+                        message('ошибка!\nкоманда "qr" завершилась с ошибкой\n{error}')
                 if (
                     text
                     and (
@@ -429,5 +432,5 @@ while 1:
                             json.dump(settings, f)
                         message(f"настройки были сброшены, текущие настройки\n {settings[str(event.message.peer_id - 2000000000)]}")
                         
-    #except Exception as error:
-    #    print(error)
+    except Exception as error:
+        print(error)
