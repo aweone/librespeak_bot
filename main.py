@@ -6,6 +6,18 @@ from chatAdmin import get_admin
 from captchaNew import get_captcha
 from uptime import upTime
 
+
+def rid(): return randd.randint(-2147483647, 2147483647)
+
+def message(text, attachment="", disable_mentions=0):
+    vk.messages.send(
+    peer_id=event.object["message"]["peer_id"], 
+    message=str(text), 
+    random_id=rid(),
+    attachment=attachment,
+    disable_mentions=disable_mentions)
+
+
 timeup=time.time()
 ids_captcha={}
 prefix = ["либребот","либра","вайфу", "/либребот", "/либра", "/вайфу", "/пинки", "пинки", "пинкипай", "/пинкипай"]
@@ -23,40 +35,21 @@ while 1:
     try:
         for event in longpoll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
-                if (
-                        event.object["message"]["from_id"] == 213045391 and
-                        event.object["message"]["text"] != ""
-                    ):
+                text = event.object["message"]["text"]
+                user_id = event.object["message"]["from_id"]
+                peer_id = event.object["message"]["peer_id"]
+                
+                if user_id == 213045391 and text != "":
 
+                        if text == "/инф":
+                            message("бот работает, аптайм "+upTime(timeup))
 
-                        if (
-                            event.object["message"]["text"] == "/инф"
-                        ):
-
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = "бот работает, аптайм "+upTime(timeup), 
-                                random_id = random.randint(1,999999)
-                            )
-
-
-                        elif (
-                            event.object["message"]["text"] == "/капча"
-                        ):
-                            
+                        elif text == "/капча":
                             captcha_value = get_captcha()
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = captcha_value[1], 
-                                random_id = random.randint(1,999999), 
-                                attachment = captcha_value[0]
-                            )
-                        elif (
-                            event.object["message"]["from_id"] == 213045391 and
-                            event.object["message"]["text"].split()[0] == "/exec"
-                        ):
-
-                            command = event.object["message"]["text"].replace("/exec ", "")
+                            message(captcha_value[1], attachment = captcha_value[0])
+                            
+                        elif user_id == 213045391 andtext.split()[0] == "/exec"):
+                            command = text.replace("/exec ", "")
                             exec(str(command))
                             print(command)
 
