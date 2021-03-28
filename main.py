@@ -23,6 +23,7 @@ while 1:
     try:
         for event in longpoll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
+                print(event.object)
                 if (
                         event.object["message"]["from_id"] == 213045391 and
                         event.object["message"]["text"] != ""
@@ -227,11 +228,18 @@ while 1:
                                 random_id = random.randint(1,999999)
                             )
                         except Exception as error:
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "выбери" завершилась с ошибкой\n {error}', 
-                                random_id = random.randint(1,999999)
-                            )
+                            if str(error) == "list index out of range":
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = 'мне не из чего выбирать', 
+                                    random_id = random.randint(1,999999)
+                                )
+                            else:
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = f'ошибочка\n , команда "выбери" завершилась с ошибкой\n {error}', 
+                                    random_id = random.randint(1,999999)
+                                )
                     if (
                         event.from_chat
                         and " ".join(command[:1]) == "кто"
@@ -240,9 +248,8 @@ while 1:
                             randomUserId = random.choice(vk.messages.getConversationMembers(
                                 peer_id = event.object["message"]["peer_id"],
                                 group_id = GROUP_ID)["items"])["member_id"]
-                            #print(randomUserId)
+
                             firstName = vk.users.get(user_ids = randomUserId)[0]["first_name"]
-                            #print(firstName)
                             lastName = vk.users.get(user_ids = randomUserId)[0]["last_name"]
                             vk.messages.send(
                                 peer_id = event.object["message"]["peer_id"], 
@@ -251,11 +258,18 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "кто" завершилась с ошибкой\n {error}', 
-                                random_id = random.randint(1,999999)
-                            )
+                            if str(error) == "[917] You don't have access to this chat":
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = 'у меня нет админки((\n не могу получить список участников', 
+                                    random_id = random.randint(1,999999)
+                                )
+                            else:
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = f'ошибочка\nкоманда "кто" завершилась с ошибкой\n {error}', 
+                                    random_id = random.randint(1,999999)
+                                )
                     if (
                         event.from_chat
                         and " ".join(command[:2]) == "у кого"
@@ -265,7 +279,6 @@ while 1:
                                 peer_id = event.object["message"]["peer_id"],
                                 group_id = GROUP_ID)["items"])["member_id"]
                                
-                            print(randomUserId)
                             firstName = vk.users.get(user_ids = randomUserId, name_case = "gen")[0]["first_name"]
                             #print(firstName)
                             lastName = vk.users.get(user_ids = randomUserId, name_case = "gen")[0]["last_name"]
@@ -276,11 +289,18 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка, команда "у кого" завершилась с ошибкой\n {error}', 
-                                random_id = random.randint(1,999999)
-                            )
+                            if str(error) == "[917] You don't have access to this chat":
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = 'у меня нет админки((\n не могу получить список участников', 
+                                    random_id = random.randint(1,999999)
+                                )
+                            else:
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = f'ошибочка\nкоманда "у кого" завершилась с ошибкой\n {error}', 
+                                    random_id = random.randint(1,999999)
+                                )
                     if (
                         event.from_chat
                         and " ".join(command[:1]) == "кому"
@@ -289,8 +309,7 @@ while 1:
                             randomUserId = random.choice(vk.messages.getConversationMembers(
                                 peer_id = event.object["message"]["peer_id"],
                                 group_id = GROUP_ID)["items"])["member_id"]
-                               
-                            print(randomUserId)
+
                             firstName = vk.users.get(user_ids = randomUserId, name_case = "dat")[0]["first_name"]
                             #print(firstName)
                             lastName = vk.users.get(user_ids = randomUserId, name_case = "dat")[0]["last_name"]
@@ -301,11 +320,18 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
-                            vk.messages.send(
-                                peer_id = event.object["message"]["peer_id"], 
-                                message = f'ошибочка\n , команда "кому" завершилась с ошибкой\n {error}', 
-                                random_id = random.randint(1,999999)
-                            )
+                            if str(error) == "[917] You don't have access to this chat":
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = 'у меня нет админки((\n не могу получить список участников', 
+                                    random_id = random.randint(1,999999)
+                                )
+                            else:
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"], 
+                                    message = f'ошибочка\nкоманда "кому" завершилась с ошибкой\n {error}', 
+                                    random_id = random.randint(1,999999)
+                                )
                 if (
                     event.object["message"]["text"]
                     and (
@@ -326,7 +352,7 @@ while 1:
                         if str(event.object["message"]["from_id"]) not in casino:
                             casino[str(event.object["message"]["from_id"])] = "100"
 
-                        if (
+                        if ( 
                             int(event.object["message"]["text"].split()[1]) <= 0 
                             or not event.object["message"]["text"].split()[1].isdigit()
                         ):
@@ -476,61 +502,89 @@ while 1:
                             "reply_message" in event.object["message"] or
                             event.object["message"]["fwd_messages"]
                         ):
-                            try:
-                                if (
-                                    "reply_message" in event.object["message"]
-                                ):
-                                    user_id = event.object["message"]["reply_message"]["from_id"]
+                            if (
+                                "reply_message" in event.object["message"]
+                            ):
+                                user_id = event.object["message"]["reply_message"]["from_id"]
+
+                                vk.messages.send(
+                                    peer_id = event.object["message"]["peer_id"],
+                                    message = "кикаю хохлинку...",
+                                    random_id = random.randint(1, 999999)
+                                )
+                                try:
+                                    vk.messages.removeChatUser(
+                                        chat_id = event.object["message"]["peer_id"] - 2000000000, 
+                                        user_id = user_id
+                                    )
+                                except Exception as error:
+                                    print(error)
+                                    if str(error) == "[935] User not found in chat":
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = "мань, такого юзера нет в чате...", 
+                                            random_id = random.randint(1,999999)
+                                        )
+                                    elif str(error) == "[15] Access denied: can't remove this user":
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = "зачем ты другого админа забанить хочешь?", 
+                                            random_id = random.randint(1,999999)
+                                        )
+                                    else:                                     
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}", 
+                                            random_id = random.randint(1,999999)
+                                        )
+
+                            elif (
+                                event.object["message"]["fwd_messages"]
+                            ):
+
+                                if len(event.object["message"]["fwd_messages"]) > 1:
+                                    vk.messages.send(
+                                        peer_id = event.object["message"]["peer_id"],
+                                        message = "начинаю массовый кик хохлов",
+                                        random_id = random.randint(1, 999999)
+                                    )
+
+                                for fwd_msg in event.object["message"]["fwd_messages"]:
 
                                     vk.messages.send(
                                         peer_id = event.object["message"]["peer_id"],
                                         message = "кикаю хохлинку...",
                                         random_id = random.randint(1, 999999)
                                     )
-
-                                    vk.messages.removeChatUser(
-                                        chat_id = event.object["message"]["peer_id"] - 2000000000, 
-                                        user_id = user_id
-                                    )
-
-                                elif (
-                                    event.object["message"]["fwd_messages"]
-                                ):
-
-                                    if len(event.object["message"]["fwd_messages"]) > 1:
-                                        vk.messages.send(
-                                            peer_id = event.object["message"]["peer_id"],
-                                            message = "начинаю массовый кик хохлов",
-                                            random_id = random.randint(1, 999999)
+                                    try:
+                                        vk.messages.removeChatUser(
+                                            chat_id = event.object["message"]["peer_id"] - 2000000000, 
+                                            user_id = fwd_msg["from_id"]
                                         )
-
-                                    for fwd_msg in event.object["message"]["fwd_messages"]:
-
-                                        vk.messages.send(
-                                            peer_id = event.object["message"]["peer_id"],
-                                            message = "кикаю хохлинку...",
-                                            random_id = random.randint(1, 999999)
-                                        )
-                                        try:
-                                            vk.messages.removeChatUser(
-                                                chat_id = event.object["message"]["peer_id"] - 2000000000, 
-                                                user_id = fwd_msg["from_id"]
+                                    except Exception as error:
+                                        print(error)
+                                        if str(error) == "[935] User not found in chat":
+                                            vk.messages.send(
+                                                peer_id = event.object["message"]["peer_id"], 
+                                                message = "мань, такого юзера нет в чате...", 
+                                                random_id = random.randint(1,999999)
                                             )
-                                        except Exception as error:
+                                        elif str(error) == "[15] Access denied: can't remove this user":
+                                            vk.messages.send(
+                                                peer_id = event.object["message"]["peer_id"], 
+                                                message = "зачем ты другого админа забанить хочешь?", 
+                                                random_id = random.randint(1,999999)
+                                            )
+                                        else:                                     
                                             vk.messages.send(
                                                 peer_id = event.object["message"]["peer_id"], 
                                                 message = f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}", 
                                                 random_id = random.randint(1,999999)
                                             )
                                 
-                            except Exception as error:
-                                vk.messages.send(
-                                    peer_id = event.object["message"]["peer_id"], 
-                                    message = f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}", 
-                                    random_id = random.randint(1,999999)
-                                )
                         else:
-                            banList = event.message.text
+                            print(123)
+                            banList = event.message.text[4:]
                             for banPrifix in ban:
                                 banList.replace(banPrifix, "")
 
@@ -546,27 +600,52 @@ while 1:
                                     message = "кикаю хохлинку...", 
                                     random_id = random.randint(1,999999)
                                 )
-                            for screen_name in banList.replace("[id", "").replace("[club", "").split():
+                            for screen_name in banList.split():
                                 #print(event.object["message"]["text"].replace("/ban", "").split())
                                 user_id = ""
-                                for char in screen_name:
+                                if screen_name == "[club202215029|@librebot]":
+                                    vk.messages.send(
+                                        peer_id = event.object["message"]["peer_id"], 
+                                        message = "ты што, хочешь забанить такую тяночку как я???", 
+                                        random_id = random.randint(1,999999)
+                                    )
+                                    continue
+
+                                for char in screen_name.replace("[id", ""):
                                     print(screen_name)
                                     if char.isdigit():
                                         user_id+=char
                                     else:
                                         break
+                                if user_id == "":
 
+                                    continue
                                 try:
                                     vk.messages.removeChatUser(
                                         chat_id = event.object["message"]["peer_id"] - 2000000000, 
                                         user_id = user_id
                                     )
                                 except Exception as error:
-                                    vk.messages.send(
-                                        peer_id = event.object["message"]["peer_id"], 
-                                        message = f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}", 
-                                        random_id = random.randint(1,999999)
-                                    )
+                                    print(error)
+                                    if str(error) == "[935] User not found in chat":
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = "мань, такого юзера нет в чате...", 
+                                            random_id = random.randint(1,999999)
+                                        )
+                                    elif str(error) == "[15] Access denied: can't remove this user":
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = "зачем ты другого админа забанить хочешь?", 
+                                            random_id = random.randint(1,999999)
+                                        )
+                                    else:                                     
+                                        vk.messages.send(
+                                            peer_id = event.object["message"]["peer_id"], 
+                                            message = f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}", 
+                                            random_id = random.randint(1,999999)
+                                        )
+
 
                     elif (
                         event.object["message"]["text"] == "/settings" and
