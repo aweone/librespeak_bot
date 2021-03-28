@@ -228,6 +228,7 @@ while 1:
                                 random_id = random.randint(1,999999)
                             )
                         except Exception as error:
+<<<<<<< HEAD
                             if str(error) == "list index out of range":
                                 vk.messages.send(
                                     peer_id = event.object["message"]["peer_id"], 
@@ -240,6 +241,13 @@ while 1:
                                     message = f'ошибочка\n , команда "выбери" завершилась с ошибкой\n {error}', 
                                     random_id = random.randint(1,999999)
                                 )
+=======
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = f'OOOPS... ошибочка\n команда "выбери" завершилась с ошибкой\n {error}', 
+                                random_id = random.randint(1,999999)
+                            )
+>>>>>>> b2941bfb7943deb4ca30c4958b262b1b02159cf4
                     if (
                         event.from_chat
                         and " ".join(command[:1]) == "кто"
@@ -258,6 +266,7 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
+<<<<<<< HEAD
                             if str(error) == "[917] You don't have access to this chat":
                                 vk.messages.send(
                                     peer_id = event.object["message"]["peer_id"], 
@@ -270,6 +279,13 @@ while 1:
                                     message = f'ошибочка\nкоманда "кто" завершилась с ошибкой\n {error}', 
                                     random_id = random.randint(1,999999)
                                 )
+=======
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = f'OOOPS... ошибочка\n команда "кто" завершилась с ошибкой\n {error}', 
+                                random_id = random.randint(1,999999)
+                            )
+>>>>>>> b2941bfb7943deb4ca30c4958b262b1b02159cf4
                     if (
                         event.from_chat
                         and " ".join(command[:2]) == "у кого"
@@ -289,6 +305,7 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
+<<<<<<< HEAD
                             if str(error) == "[917] You don't have access to this chat":
                                 vk.messages.send(
                                     peer_id = event.object["message"]["peer_id"], 
@@ -301,6 +318,13 @@ while 1:
                                     message = f'ошибочка\nкоманда "у кого" завершилась с ошибкой\n {error}', 
                                     random_id = random.randint(1,999999)
                                 )
+=======
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = f'OOOPS... ошибочка\n команда "у кого" завершилась с ошибкой\n {error}', 
+                                random_id = random.randint(1,999999)
+                            )
+>>>>>>> b2941bfb7943deb4ca30c4958b262b1b02159cf4
                     if (
                         event.from_chat
                         and " ".join(command[:1]) == "кому"
@@ -320,6 +344,7 @@ while 1:
                                 disable_mentions = 1
                             )
                         except Exception as error:
+<<<<<<< HEAD
                             if str(error) == "[917] You don't have access to this chat":
                                 vk.messages.send(
                                     peer_id = event.object["message"]["peer_id"], 
@@ -332,6 +357,13 @@ while 1:
                                     message = f'ошибочка\nкоманда "кому" завершилась с ошибкой\n {error}', 
                                     random_id = random.randint(1,999999)
                                 )
+=======
+                            vk.messages.send(
+                                peer_id = event.object["message"]["peer_id"], 
+                                message = f'OOOPS... ошибочка\n команда "кому" завершилась с ошибкой\n {error}', 
+                                random_id = random.randint(1,999999)
+                            )
+>>>>>>> b2941bfb7943deb4ca30c4958b262b1b02159cf4
                 if (
                     event.object["message"]["text"]
                     and (
