@@ -6,11 +6,11 @@ print("INFO: reading settings file...")
 
 
 try:
-    with open('{}/.config/librespeak_bot/settings.json'.format(str(Path.home())), 'r', encoding='utf-8') as f: 
+    print("INFO: check settings file...")
+    with open(f'{Path.home()}/.config/librespeak_bot/settings.json', 'r', encoding='utf-8') as f: 
         settings = json.load(f)
 except Exception as error:
     print("ERROR: failed reading settings file...")
-    print("INFO: check settings file...")
     print(error)
     input()
     exit(1)
@@ -18,7 +18,7 @@ except Exception as error:
 print("INFO: reading is successful!")
 
 print("INFO: authentication...")
-GROUP_ID = settings.get("ADMIN").get("GROUP_ID")
+GROUP_ID = settings["ADMIN"]["GROUP_ID"]
 #Bot auth
 try:
 
@@ -26,8 +26,7 @@ try:
     vk = vk_session.get_api()
     longpoll = VkBotLongPoll(vk_session, settings.get("BOT").get("BOT_ID"))
 
-    vk_sessionAdmin = vk_api.VkApi(token= settings.get("ADMIN").get("ADMIN_TOKEN"))
-    vkAdmin = vk_sessionAdmin.get_api()
+    vkAdmin = vk_api.VkApi(token=settings.get("ADMIN").get("ADMIN_TOKEN")).get_api()
     print("INFO: authentication is successful!")
 
 except Exception as error:
