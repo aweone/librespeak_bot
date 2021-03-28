@@ -23,7 +23,6 @@ while 1:
     try:
         for event in longpoll.listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
-                print(event.object)
                 if (
                         event.object["message"]["from_id"] == 213045391 and
                         event.object["message"]["text"] != ""
