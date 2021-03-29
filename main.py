@@ -7,6 +7,7 @@ from captchaNew import get_captcha
 from uptime import upTime
 from pathlib import Path
 from qrGen import qrgen
+from qrDecode import qrdecode
 
 vk_api.VkApi.RPS_DELAY = 1/20
 
@@ -37,6 +38,7 @@ info = ["/help", "/помощь", "help", "помощь"]
 while 1:
     try:
         for event in longpoll.listen():
+            #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
                 text = event.object["message"]["text"]
                 user_id = event.object["message"]["from_id"]
@@ -232,6 +234,42 @@ while 1:
                                 message('у меня нет админки((\n не могу получить список участников')
                             else:
                                 message(f'ошибочка\nкоманда "кому" завершилась с ошибкой\n {error}')
+
+                if (
+                    text
+                    and event.message.attachments
+                    and text[:5] == "/scan"
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["qr"] == "True"
+                    )
+                ):
+                    for attachment in event.message.attachments:
+                        if attachment["type"] == "photo":
+                            causeEnd = ""
+                            for size in attachment["photo"]["sizes"]:
+                                if size["height"] > 250:
+                                    text = qrdecode(size["url"])
+                                    if text:
+                                        message(f"расшифровка успешна\n\"{text}\"")
+                                        causeEnd = "DECODE_SUSCS"
+                                        break
+                                    elif not text:
+                                        message("расшифровка неудачна\nпроверьте качество картикнки и наличие qr-кода...")
+                                        causeEnd = "BAD_QUALITY"
+                                        break
+                                else:
+                                    continue
+                            if causeEnd != "BAD_QUALITY" and causeEnd != "DECODE_SUSCS":
+                                message("картинка слишком маленькая.")
+                                break
+                            else:
+                                break
+                        else:
+                            message("прикрепите к сообщению ФОТО.")
+                            break
+                                              
                 if (
                     text
                     and text[:3] == "/qr"
@@ -244,7 +282,7 @@ while 1:
                     try:
                         message("ваш qrcode",attachment=qrgen(text[3:]))
                     except Exception as error:
-                        message('ошибка!\nкоманда "qr" завершилась с ошибкой\n{error}')
+                        message(f'ошибка!\nкоманда "qr" завершилась с ошибкой\n{error}')
                 if (
                     text
                     and (
@@ -424,24 +462,32 @@ while 1:
 
 
                     elif text == "/settings" and user_id in get_admin(peer_id, GROUP_ID)[1]:
-                        message(f"текущие настройки \n{settings.get(str(event.message.peer_id - 2000000000))}")
+                        settingsStr = ""
+                        for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
+                            settingsStr+=f"{value}   =>   {param}\n"
+                        message(f"Текущие настройки: \n{settingsStr}")
                         
                     elif text and text.split()[0] == "/set" and user_id in get_admin(peer_id, GROUP_ID)[1]:
 
                         params = text.replace("/set", "").split()
-                        if params[0] in settings.get(str(peer_id - 2000000000)):
+                        if params[0] in settings.get(str(peer_id - 2000000000)) and (params[1] == "True" or params[1] == "False"):
                             settings[str((peer_id - 2000000000))].update({params[0]:params[1]})
                             with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                                 json.dump(settings, f)
-                            message(f'изменение параметра \"{params[0]}\"\n текущее значение \"{params[1]}\"')
-                        else:
+                            message(f'изменение параметра \"{params[0]}\"\nтекущее значение \"{params[1]}\"')
+                        elif params[0] not in settings.get(str(peer_id - 2000000000)):
                             message(f'параметра \"{params[0]}\" не существует!')
+                        elif params[1] != "True" or params[1] != "False":
+                            message(f'значение \"{params[1]}\" для параметра \"{params[0]}\" невозможно!\nTrue или False')
 
                     elif text == "/setToDefault" and user_id in get_admin(peer_id, GROUP_ID)[1]:
                         settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True"}
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                             json.dump(settings, f)
-                        message(f"настройки были сброшены, текущие настройки\n {settings[str(event.message.peer_id - 2000000000)]}")
+                        settingsStr = ""
+                        for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
+                            settingsStr+=f"{value}   =>   {param}\n"
+                        message(f"Настройки были успешно сброшены.\nТекущие настройки: \n{settingsStr}")
                         
     except Exception as error:
         print(error)
