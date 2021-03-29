@@ -1,7 +1,7 @@
 from auth import vk
 import random
 
-def get_admin(peerid, groupid, event):
+def get_admin(peerid, groupid):
     try:
         admins = []
         admins_str = ""
