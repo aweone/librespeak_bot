@@ -8,6 +8,8 @@ from uptime import upTime
 from pathlib import Path
 from qrGen import qrgen
 from qrDecode import qrdecode
+from functionGraph import graph, graph3d
+from helpMsg import helpmsg
 
 vk_api.VkApi.RPS_DELAY = 1/20
 
@@ -34,9 +36,11 @@ developer = ["разраб", "разработчик", "создатель", "д
 think = ["я думаю, что ", "полагаю, ", "предполагаю, ", "я полагаю, что ", "мне кажется, ", "кажется что ", "я полагаю, что ", "я думаю, ", "думаю, что"]
 who = ["у кого", "кто"]
 need = ["нужно", "требуется", "необходимо", "надо"]
-info = ["/help", "/помощь", "help", "помощь"]
+info = ["/help", "/помощь", "help", "помощь", "/хелп"]
+funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
+funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
 while 1:
-    try:
+    if True:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
@@ -86,7 +90,7 @@ while 1:
                         and event.object["message"]["action"]["member_id"] == -202215029
                     ):
                         message("оу, меня добавили в новую беседу, генерю новый конфиг для беседы. хохлам приветик!;)")
-                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True"}
+                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True"}
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                             json.dump(settings, f)
 
@@ -121,7 +125,7 @@ while 1:
                     text
                     and text.split()[0] in info
                 ):
-                    message("coming soon...")
+                    message(helpmsg)
                 if (
                     text
                     and text.split()[0].lower() == "помогите"
@@ -234,6 +238,24 @@ while 1:
                                 message('у меня нет админки((\n не могу получить список участников')
                             else:
                                 message(f'ошибочка\nкоманда "кому" завершилась с ошибкой\n {error}')
+                if (
+                    text
+                    and text.split()[0] in funcgraph
+                ):  
+                    try:
+                        message(f"ваш график:", attachment=graph(" ".join(text.split()[1:])))
+                    except Exception as error:
+                        print(error)
+                        message(f"ошибка\n{error}")
+                if (
+                    text
+                    and text.split()[0] in funcgraph3d
+                ):
+                    try:
+                        message(f"ваш график:", attachment=graph3d(" ".join(text.split()[1:])))
+                    except Exception as error:
+                        print(error)
+                        message(f"ошибка\n{error}")
 
                 if (
                     text
@@ -280,7 +302,7 @@ while 1:
                     )
                 ):
                     try:
-                        message("ваш qrcode",attachment=qrgen(text[3:]))
+                        message("ваш qrcode",attachment=qrgen(text[4:]))
                     except Exception as error:
                         message(f'ошибка!\nкоманда "qr" завершилась с ошибкой\n{error}')
                 if (
@@ -301,7 +323,7 @@ while 1:
                         rate = 0
 
                         if str(user_id) not in casino:
-                            casino[str(user_id)] = "100"
+                            casino[str(user_id)] = "1000"
 
                         if ( 
                             int(text.split()[1]) <= 0 
@@ -422,7 +444,6 @@ while 1:
                                         message(f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}")
                                 
                         else:
-                            print(123)
                             banList = text[4:]
                             for banPrifix in ban:
                                 banList.replace(banPrifix, "")
@@ -481,7 +502,7 @@ while 1:
                             message(f'значение \"{params[1]}\" для параметра \"{params[0]}\" невозможно!\nTrue или False')
 
                     elif text == "/setToDefault" and user_id in get_admin(peer_id, GROUP_ID)[1]:
-                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True"}
+                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True"}
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                             json.dump(settings, f)
                         settingsStr = ""
@@ -489,5 +510,5 @@ while 1:
                             settingsStr+=f"{value}   =>   {param}\n"
                         message(f"Настройки были успешно сброшены.\nТекущие настройки: \n{settingsStr}")
                         
-    except Exception as error:
-        print(error)
+    #except Exception as error:
+    #    print(error)
