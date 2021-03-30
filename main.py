@@ -315,10 +315,10 @@ while 1:
                     )
                 ):
 
-                    with open(f'{Path.home()}/.config/librespeak_bot/casino.json') as f:
-                        casino = json.load(f)
-
                     if text.split()[0] == "/казино":
+
+                        with open(f'{Path.home()}/.config/librespeak_bot/casino.json') as f:
+                            casino = json.load(f)
 
                         gain = 0
                         rate = 0
@@ -344,7 +344,7 @@ while 1:
                             message("лох, денег нет")
                             
                         else:
-                            message(f"{a}|{b}|{c}")
+                            message(f"{a} | {b} | {c}")
                             if a == b == c:
                                 gain = rate * (a + b + c)
                                 message(f"ого, сорвал куш, выиргрыш {gain} руб")
