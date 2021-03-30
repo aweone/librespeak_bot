@@ -15,7 +15,7 @@ vk_api.VkApi.RPS_DELAY = 1/20
 
 def rid(): return random.randint(-2147483647, 2147483647)
 
-def message(text, attachment="", disable_mentions=0):
+def message(text, attachment="", disable_mentions=1):
     vk.messages.send(
     peer_id=peer_id, 
     message=str(text), 
@@ -40,10 +40,11 @@ info = ["/help", "/помощь", "help", "помощь", "/хелп"]
 funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
 funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
 while 1:
-    if True:
+    try:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
+                startEterationTime = time.time()
                 text = event.object["message"]["text"]
                 user_id = event.object["message"]["from_id"]
                 peer_id = event.object["message"]["peer_id"]
@@ -291,7 +292,7 @@ while 1:
                         else:
                             message("прикрепите к сообщению ФОТО.")
                             break
-                                              
+                    continue                
                 if (
                     text
                     and text[:3] == "/qr"
@@ -343,7 +344,7 @@ while 1:
                             message("лох, денег нет")
                             
                         else:
-                            message(f"{a} {b} {c}")
+                            message(f"{a}|{b}|{c}")
                             if a == b == c:
                                 gain = rate * (a + b + c)
                                 message(f"ого, сорвал куш, выиргрыш {gain} руб")
@@ -509,6 +510,7 @@ while 1:
                         for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
                             settingsStr+=f"{value}   =>   {param}\n"
                         message(f"Настройки были успешно сброшены.\nТекущие настройки: \n{settingsStr}")
-                        
-    #except Exception as error:
-    #    print(error)
+                if text == "/тест":
+                    message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}")
+    except Exception as error:
+        print(error)
