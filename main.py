@@ -45,7 +45,7 @@ info = ["/help", "/помощь", "help", "помощь", "/хелп"]
 funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
 funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
 while 1:
-    try:
+    if True:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
@@ -342,8 +342,8 @@ while 1:
                         and settings[str(peer_id - 2000000000)]["wiki"] == "True"
                     )
                 ):
-                    if text[-1].isdigit():
-                        message(Wiki(text[5::-2], text[-1]))
+                    if text.split()[-1].isdigit():
+                        message(Wiki(text[5:].replace(text.split()[-1], ""), int(text.split()[-1])))
                     else:
                         message(Wiki(text[5:]))
                 if (
@@ -607,5 +607,5 @@ while 1:
                 
                 if text == "/тест":
                     message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}")
-    except Exception as error:
-        print(error)
+    #except Exception as error:
+    #    print(error)
