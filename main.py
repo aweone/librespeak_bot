@@ -10,7 +10,12 @@ from qrGen import qrgen
 from qrDecode import qrdecode
 from functionGraph import graph, graph3d
 from helpMsg import helpmsg
-
+from wiki import Wiki
+from currency import exchangeRate
+from cryptoCurrency import cryptocurrency
+from abuse import insult
+from githubapi import getGitHubAccInfo
+from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
 
 def rid(): return random.randint(-2147483647, 2147483647)
@@ -45,10 +50,10 @@ while 1:
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
                 startEterationTime = time.time()
-                text = event.object["message"]["text"]
-                user_id = event.object["message"]["from_id"]
-                peer_id = event.object["message"]["peer_id"]
-                if user_id == 213045391 and text != "":
+                text = event.message.text
+                user_id = event.message.from_id
+                peer_id = event.message.peer_id
+                if user_id == 213045391 and text:
                     if text == "/инф":
                         message(f"бот работает, аптайм {upTime(timeup)}")
 
@@ -61,14 +66,14 @@ while 1:
                         exec(str(command))
                         print(command)
 
-                if "action" in event.object["message"].keys():
+                if "action" in event.message.keys():
 
                     if (
-                        event.object["message"]["action"]["type"] == "chat_invite_user_by_link"
-                        and (settings.get(str(peer_id - 2000000000)).get("captcha_on")) == "True"
+                        event.message.action.type == "chat_invite_user_by_link"
+                        and settings[str(peer_id - 2000000000)]["captcha_on"] == "True"
                     ):
 
-                        message(f"новый [id{event.object['message']['from_id']}|пользователь] присоединился по ссылке")
+                        message(f"новый [id{event.message.from_id}|пользователь] присоединился по ссылке")
 
                         captcha_value = get_captcha()
                         message("пройдите капчу или кик", captcha_value[0])
@@ -76,22 +81,26 @@ while 1:
                             ids_captcha[str(peer_id)] = {}
                         ids_captcha[str(peer_id)][str(user_id)] = captcha_value[1]
 
-                    elif event.object["message"]["action"]["type"] == "chat_kick_user" and (settings.get(str(peer_id - 2000000000)).get("greeting_on")) == "True":
-                        message(f"еще один [id{event.object['message']['action']['member_id']}|хохол] покидает нас, ура!")
-
                     elif (
-                        event.object["message"]["action"]["type"] == "chat_invite_user"
-                        and event.object["message"]["action"]["member_id"] != -202215029
-                        and (settings.get(str(peer_id - 2000000000)).get("greeting_on")) == "True"
+                        event.message.action.type == "chat_kick_user"
+                        and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
                     ):
-                        message(f'еще один [id{event.object["message"]["action"]["member_id"]}|хохол] присоединился...')
+                        message(f"еще один [id{event.message.action.member_id}|хохол] покидает нас, ура!")
 
                     elif (
-                        event.object["message"]["action"]["type"] == "chat_invite_user"
-                        and event.object["message"]["action"]["member_id"] == -202215029
+                        event.message.action.type == "chat_invite_user"
+                        and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
+                        and event.message.action.member_id != -202215029
+                    ):
+                        message(f"еще один [id{event.message.action.member_id}|хохол] присоединился...")
+
+                    elif (
+                        event.message.action.type == "chat_invite_user"
+                        and event.message.action.member_id == -202215029
                     ):
                         message("оу, меня добавили в новую беседу, генерю новый конфиг для беседы. хохлам приветик!;)")
-                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True"}
+                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True","rate":"True", "wiki":"True", "github":"True"}
+
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                             json.dump(settings, f)
 
@@ -134,7 +143,9 @@ while 1:
                     message("помогаю")
                 
 
-                if (text and text.lower().split()[0] in prefix
+                if (
+                    text 
+                    and text.lower().split()[0] in prefix
                     and (
                         event.from_user
                         or str(peer_id - 2000000000) in settings
@@ -242,18 +253,28 @@ while 1:
                 if (
                     text
                     and text.split()[0] in funcgraph
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["math"] == "True"
+                    )
                 ):  
                     try:
-                        message(f"ваш график:", attachment=graph(" ".join(text.split()[1:])))
+                        message(f"ваш график:", attachment = graph(" ".join(text.split()[1:])))
                     except Exception as error:
                         print(error)
                         message(f"ошибка\n{error}")
                 if (
                     text
                     and text.split()[0] in funcgraph3d
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["math"] == "True"
+                    )
                 ):
                     try:
-                        message(f"ваш график:", attachment=graph3d(" ".join(text.split()[1:])))
+                        message(f"ваш график:", attachment = graph3d(" ".join(text.split()[1:])))
                     except Exception as error:
                         print(error)
                         message(f"ошибка\n{error}")
@@ -271,23 +292,19 @@ while 1:
                     for attachment in event.message.attachments:
                         if attachment["type"] == "photo":
                             causeEnd = ""
+                            maxSize = 0
                             for size in attachment["photo"]["sizes"]:
-                                if size["height"] > 250:
-                                    text = qrdecode(size["url"])
-                                    if text:
-                                        message(f"расшифровка успешна\n\"{text}\"")
-                                        causeEnd = "DECODE_SUSCS"
-                                        break
-                                    elif not text:
-                                        message("расшифровка неудачна\nпроверьте качество картикнки и наличие qr-кода...")
-                                        causeEnd = "BAD_QUALITY"
-                                        break
-                                else:
-                                    continue
-                            if causeEnd != "BAD_QUALITY" and causeEnd != "DECODE_SUSCS":
-                                message("картинка слишком маленькая.")
+                                if size["height"] > maxSize:
+                                    maxsize = size["height"]
+                            text = qrdecode(size["url"])
+
+                            if text:
+                                message(f"расшифровка успешна\n\"{text}\"")
+                                causeEnd = "DECODE_SUSCS"
                                 break
-                            else:
+                            elif not text:
+                                message("расшифровка неудачна\nпроверьте качество картикнки и наличие qr-кода...")
+                                causeEnd = "BAD_QUALITY"
                                 break
                         else:
                             message("прикрепите к сообщению ФОТО.")
@@ -306,6 +323,64 @@ while 1:
                         message("ваш qrcode",attachment=qrgen(text[4:]))
                     except Exception as error:
                         message(f'ошибка!\nкоманда "qr" завершилась с ошибкой\n{error}')
+                if (
+                    text
+                    and text.startswith("/github")
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["github"] == "True"
+                    )
+                ):
+                    message(getGitHubAccInfo(text.split()[1]))
+                if (
+                    text
+                    and text.startswith("/wiki")
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["wiki"] == "True"
+                    )
+                ):
+                    if text[-1].isdigit():
+                        message(Wiki(text[5::-2], text[-1]))
+                    else:
+                        message(Wiki(text[5:]))
+                if (
+                    text
+                    and text.startswith("/курс")
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["rate"] == "True"
+                    )
+                ):
+                    if len(text.split()) > 1 and text.split()[1] == "-евро":
+                        rate = exchangeRate("EUR").value
+                        message(f"Курс евро {rate} руб.")
+                    elif len(text.split()) > 1 and text.split()[1] == "-доллар":
+                        rate = exchangeRate("USD").value
+                        message(f"Курс доллара {rate} руб.")
+                    else:
+                        rateUSD = exchangeRate("USD").value
+                        rateEUR = exchangeRate("EUR").value
+                        message(f"Курс Доллара США {rateUSD} руб, курс Евро {rateEUR} руб.")
+                if (
+                    text
+                    and text.startswith("/криптокурс")
+                    and (
+                        event.from_user
+                        or str(peer_id - 2000000000) in settings
+                        and settings[str(peer_id - 2000000000)]["rate"] == "True"
+                    )
+                ):
+                    message(f"Курс четырех популярных криптовалют:\n{cryptocurrency()}")
+
+                if (
+                    text
+                    and text == "/оск"
+                ):
+                    message(insult())
                 if (
                     text
                     and (
@@ -390,22 +465,32 @@ while 1:
                     except:
                         message("не могу узнать админов данного чата...")
 
-                if event.object["message"]["attachments"] and event.object["message"]["attachments"][0]["type"] == "audio_message" and random.choices([True, False], weights = (25, 75), k=2)[0]:
+                if (
+                    event.message.attachments
+                    and event.object["message"]["attachments"][0]["type"] == "audio_message"
+                    and random.choices([True, False], weights = (25, 75), k=2)[0]
+                ):
                     message("хрю-хрю")
                     
-                if "навальный" in text.lower() and random.choices([True, False], weights = (25, 75), k = 2)[0]:
-
+                if (
+                    "навальный" in text.lower()
+                    and random.choices([True, False], weights = (25, 75), k = 2)[0]
+                ):
                     message("", "photo-202215029_457239052")
 
-                if text and text.split()[0].lower() in ban and user_id not in get_admin(peer_id, GROUP_ID)[1]:
+                if (
+                    text
+                    and text.split()[0].lower() in ban
+                    and user_id not in get_admin(peer_id, GROUP_ID)[1]
+                ):
                     message("угомонись, хохлинка... кикать могут только админы")
                     
                 if user_id in get_admin(peer_id, GROUP_ID)[1]:
 
                     if text and text.split()[0].lower() in ban:
-                        if "reply_message" in event.object["message"] or event.object["message"]["fwd_messages"]:
-                            if "reply_message" in event.object["message"]:
-                                user_id = event.object["message"]["reply_message"]["from_id"]
+                        if "reply_message" in event.message.keys() or event.message.fwd_messages:
+                            if "reply_message" in event.message:
+                                user_id = event.message.reply_message["from_id"]
 
                                 message("кикаю хохлинку...")
                                 try:
@@ -422,12 +507,12 @@ while 1:
                                     else:                                     
                                         message(f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}")
 
-                            elif event.object["message"]["fwd_messages"]:
+                            elif event.message.fwd_messages:
 
-                                if len(event.object["message"]["fwd_messages"]) > 1:
+                                if len(event.message.fwd_messages) > 1:
                                     message("начинаю массовый кик хохлов")
 
-                                for fwd_msg in event.object["message"]["fwd_messages"]:
+                                for fwd_msg in event.message.fwd_messages:
 
                                     message("кикаю хохлинку...")
                                     try:
@@ -446,6 +531,7 @@ while 1:
                                 
                         else:
                             banList = text[4:]
+                            
                             for banPrifix in ban:
                                 banList.replace(banPrifix, "")
 
@@ -453,6 +539,7 @@ while 1:
                                 message("начинаю массовый кик хохлов...")
                             else:
                                 message("кикаю хохлинку...")
+                            
                             for screen_name in banList.split():
                                 user_id = ""
                                 if screen_name == "[club202215029|@librebot]":
@@ -485,31 +572,39 @@ while 1:
 
                     elif text == "/settings" and user_id in get_admin(peer_id, GROUP_ID)[1]:
                         settingsStr = ""
+                        
                         for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
                             settingsStr+=f"{value}   =>   {param}\n"
+                        
                         message(f"Текущие настройки: \n{settingsStr}")
                         
                     elif text and text.split()[0] == "/set" and user_id in get_admin(peer_id, GROUP_ID)[1]:
 
                         params = text.replace("/set", "").split()
+                        
                         if params[0] in settings.get(str(peer_id - 2000000000)) and (params[1] == "True" or params[1] == "False"):
                             settings[str((peer_id - 2000000000))].update({params[0]:params[1]})
                             with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                                 json.dump(settings, f)
                             message(f'изменение параметра \"{params[0]}\"\nтекущее значение \"{params[1]}\"')
+                        
                         elif params[0] not in settings.get(str(peer_id - 2000000000)):
                             message(f'параметра \"{params[0]}\" не существует!')
+                        
                         elif params[1] != "True" or params[1] != "False":
                             message(f'значение \"{params[1]}\" для параметра \"{params[0]}\" невозможно!\nTrue или False')
 
                     elif text == "/setToDefault" and user_id in get_admin(peer_id, GROUP_ID)[1]:
-                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True"}
+                        settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True","rate":"True", "wiki":"True", "github":"True"}
+                        
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
                             json.dump(settings, f)
                         settingsStr = ""
+                        
                         for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
                             settingsStr+=f"{value}   =>   {param}\n"
                         message(f"Настройки были успешно сброшены.\nТекущие настройки: \n{settingsStr}")
+                
                 if text == "/тест":
                     message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}")
     except Exception as error:
