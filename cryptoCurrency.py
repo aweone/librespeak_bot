@@ -15,4 +15,4 @@ def cryptocurrency():
         msg += f"{cc} {USD} дол. ({RUB} руб.)\n"
     return msg
 
-print(cryptocurrency())
+#wprint(cryptocurrency())

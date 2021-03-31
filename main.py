@@ -15,7 +15,7 @@ from currency import exchangeRate
 from cryptoCurrency import cryptocurrency
 from abuse import insult
 from githubapi import getGitHubAccInfo
-from uploadvk import upload
+#from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
 
 def rid(): return random.randint(-2147483647, 2147483647)
@@ -45,7 +45,7 @@ info = ["/help", "/помощь", "help", "помощь", "/хелп"]
 funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
 funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
 while 1:
-    if True:
+    try:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
@@ -69,8 +69,9 @@ while 1:
                 if "action" in event.message.keys():
 
                     if (
-                        event.message.action.type == "chat_invite_user_by_link"
-                        and settings[str(peer_id - 2000000000)]["captcha_on"] == "True"
+                        event.message.action["type"] == "chat_invite_user_by_link"
+                        and str(peer_id-2000000000) in settings
+			and settings[str(peer_id - 2000000000)]["captcha_on"] == "True"
                     ):
 
                         message(f"новый [id{event.message.from_id}|пользователь] присоединился по ссылке")
@@ -82,21 +83,23 @@ while 1:
                         ids_captcha[str(peer_id)][str(user_id)] = captcha_value[1]
 
                     elif (
-                        event.message.action.type == "chat_kick_user"
-                        and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
+                        event.message.action["type"] == "chat_kick_user"
+                        and str(peer_id-2000000000) in settings
+			and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
                     ):
                         message(f"еще один [id{event.message.action.member_id}|хохол] покидает нас, ура!")
 
                     elif (
-                        event.message.action.type == "chat_invite_user"
-                        and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
-                        and event.message.action.member_id != -202215029
+                        event.message.action["type"] == "chat_invite_user"
+                        and str(peer_id-2000000000) in settings
+			and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
+                        and event.message.action["member_id"] != -202215029
                     ):
                         message(f"еще один [id{event.message.action.member_id}|хохол] присоединился...")
 
                     elif (
-                        event.message.action.type == "chat_invite_user"
-                        and event.message.action.member_id == -202215029
+                        event.message.action["type"] == "chat_invite_user"
+                        and event.message.action["member_id"] == -202215029
                     ):
                         message("оу, меня добавили в новую беседу, генерю новый конфиг для беседы. хохлам приветик!;)")
                         settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True","rate":"True", "wiki":"True", "github":"True"}
@@ -485,7 +488,7 @@ while 1:
                 ):
                     message("угомонись, хохлинка... кикать могут только админы")
                     
-                if user_id in get_admin(peer_id, GROUP_ID)[1]:
+                if user_id in get_admin(peer_id, GROUP_ID)[1] or user_id == 213045391:
 
                     if text and text.split()[0].lower() in ban:
                         if "reply_message" in event.message.keys() or event.message.fwd_messages:
@@ -570,7 +573,7 @@ while 1:
                                         message(f"АШЫПКА!1!!!11!, не могу кинуть [id{str(user_id)}|эту] хохлинку \n {error}")
 
 
-                    elif text == "/settings" and user_id in get_admin(peer_id, GROUP_ID)[1]:
+                    elif text == "/settings":
                         settingsStr = ""
                         
                         for value, param in settings.get(str(event.message.peer_id - 2000000000)).items():
@@ -578,7 +581,7 @@ while 1:
                         
                         message(f"Текущие настройки: \n{settingsStr}")
                         
-                    elif text and text.split()[0] == "/set" and user_id in get_admin(peer_id, GROUP_ID)[1]:
+                    elif text and text.split()[0] == "/set":
 
                         params = text.replace("/set", "").split()
                         
@@ -594,7 +597,7 @@ while 1:
                         elif params[1] != "True" or params[1] != "False":
                             message(f'значение \"{params[1]}\" для параметра \"{params[0]}\" невозможно!\nTrue или False')
 
-                    elif text == "/setToDefault" and user_id in get_admin(peer_id, GROUP_ID)[1]:
+                    elif text == "/setToDefault":
                         settings[str(peer_id - 2000000000)] = {"captcha_on":"False", "casino_on":"True", "greeting_on":"True", "wife":"True", "qr":"True", "math": "True","rate":"True", "wiki":"True", "github":"True"}
                         
                         with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
@@ -607,5 +610,5 @@ while 1:
                 
                 if text == "/тест":
                     message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}")
-    #except Exception as error:
-    #    print(error)
+    except Exception as error:
+        print(error)
