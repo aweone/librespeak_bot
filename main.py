@@ -74,6 +74,7 @@ while 1:
 			and settings[str(peer_id - 2000000000)]["captcha_on"] == "True"
                     ):
 
+                    
                         message(f"новый [id{event.message.from_id}|пользователь] присоединился по ссылке")
 
                         captcha_value = get_captcha()
@@ -87,7 +88,7 @@ while 1:
                         and str(peer_id-2000000000) in settings
 			and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
                     ):
-                        message(f"еще один [id{event.message.action.member_id}|хохол] покидает нас, ура!")
+                        message(f"еще один [id{event.message.action['member_id']}|хохол] покидает нас, ура!")
 
                     elif (
                         event.message.action["type"] == "chat_invite_user"
@@ -95,7 +96,7 @@ while 1:
 			and settings[str(peer_id - 2000000000)]["greeting_on"] == "True"
                         and event.message.action["member_id"] != -202215029
                     ):
-                        message(f"еще один [id{event.message.action.member_id}|хохол] присоединился...")
+                        message(f"еще один [id{event.message.action['member_id']}|хохол] присоединился...")
 
                     elif (
                         event.message.action["type"] == "chat_invite_user"
