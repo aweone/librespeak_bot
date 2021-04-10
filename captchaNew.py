@@ -38,7 +38,7 @@ def get_captcha():
         )
         n += draw_text.textsize(i, font)[0]
 
-    for i in range(0, random.randint(32, 64)):
+    for i in range(0, random.randint(64, 128)):
         draw.line((
             random.randint(1, 600), random.randint(1, 400),
             random.randint(1, 600), random.randint(1, 400)),
@@ -46,9 +46,9 @@ def get_captcha():
 
         )
 
-    for i in range(0, random.randint(500, 1200)):
+    for i in range(0, random.randint(700, 1500)):
         x, y = random.randint(10, 800), random.randint(10, 400)
-        eX, eY = 1, 1  # Size of Bounding Box for ellipse
+        eX, eY = 2, 2  # Size of Bounding Box for ellipse
 
         bbox = (x/2 - eX/2, y/2 - eY/2, x/2 + eX/2, y/2 + eY/2)
         draw.ellipse((bbox), fill=random.choice(

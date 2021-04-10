@@ -15,6 +15,7 @@ from currency import exchangeRate
 from cryptoCurrency import cryptocurrency
 from abuse import insult
 from githubapi import getGitHubAccInfo
+from Memory import memory
 #from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
 
@@ -610,6 +611,6 @@ while 1:
                         message(f"Настройки были успешно сброшены.\nТекущие настройки: \n{settingsStr}")
                 
                 if text == "/тест":
-                    message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}")
+                    message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}\n{memory()}")
     except Exception as error:
         print(error)

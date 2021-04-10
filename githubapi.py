@@ -3,7 +3,7 @@ from json import loads
 
 
 def getGitHubAccInfo(username):
-    account = loads(get(f"https://api.github.com/users/{username}").text.replace("'", '"'))
+    account = loads(get(f"https://api.github.com/users/{username}").text.replace("'", '`'))
     if "message" in account:
         return f"Ничего не найдено по запросу {username}"
     else:
