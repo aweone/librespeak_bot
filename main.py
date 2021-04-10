@@ -45,8 +45,13 @@ need = ["нужно", "требуется", "необходимо", "надо"]
 info = ["/help", "/помощь", "help", "помощь", "/хелп"]
 funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
 funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
+upvote = ["+", "плюс", "согл", "жиза", "согласен", "плюсую", "умножаю"]
+downvote = ["-","минус", "несогл"]
+getrating = ["рейтинг", "соцрейтинг"]
+upvotereaction = ["плюс один миска рис", "партия выдать один кошка жена", "партия выдать мешок риса"]
+downvotereaction = ["минус один миска рис", "партия забрать один кошка жена", "партия забрать мешок риса"]
 while 1:
-    try:
+    if True:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
@@ -471,6 +476,70 @@ while 1:
                         message("не могу узнать админов данного чата...")
 
                 if (
+                    event.message.text
+                    and event.message.text.split()[0].lower() in upvote
+                ):
+                    if "reply_message" in event.message.keys() or event.message.fwd_messages:
+                        if "reply_message" in event.message:
+                            user_id = event.message.reply_message["from_id"]
+
+                        elif event.message.fwd_messages:
+                            user_id = event.message.fwd_messages
+                        
+                        if user_id == event.message.from_id:
+                            message("компартия разочарован вы! вас подкручивать соц рейтинг!")
+                            continue
+
+                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                            socrating = json.load(f)
+
+                        if str(user_id) not in socrating:
+                            socrating[str(user_id)] = str(0)
+                        socrating[str(user_id)] = str(int(socrating[str(user_id)])+1)
+
+                        message(f"{random.choice(upvotereaction)}\nсоц рейтинг повышен! удар!")
+
+                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
+                            json.dump(socrating, f)
+                if (
+                    event.message.text
+                    and event.message.text.split()[0].lower() in downvote
+                ):
+                    if "reply_message" in event.message.keys() or event.message.fwd_messages:
+                        if "reply_message" in event.message:
+                            user_id = event.message.reply_message["from_id"]
+
+                        elif event.message.fwd_messages:
+                            user_id = event.message.fwd_messages
+                        
+                        if user_id == event.message.from_id:
+                            message("компартия разочарован вы! вас подкручивать соц рейтинг!")
+                            continue
+
+                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                            socrating = json.load(f)
+
+                        if str(user_id) not in socrating:
+                            socrating[str(user_id)] = str(0)
+                        socrating[str(user_id)] = str(int(socrating[str(user_id)])-1)
+
+                        message(f"{random.choice(downvotereaction)}\nсоц рейтинг понижен! удар!")
+
+                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
+                            json.dump(socrating, f)
+                if (
+                    event.message.text
+                    and event.message.text.split()[0].lower() in getrating
+                ):
+                    print(event)
+                    with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                        socrating = json.load(f)
+                    print(socrating)
+                    if str(event.message.from_id) not in socrating:
+                        socrating[str(event.message.from_id)] = str(0)
+                    message(f"ваш рейтинг {socrating[str(event.message.from_id)]}! удар!")
+                        
+                if (
                     event.message.attachments
                     and event.object["message"]["attachments"][0]["type"] == "audio_message"
                     and random.choices([True, False], weights = (25, 75), k=2)[0]
@@ -612,5 +681,3 @@ while 1:
                 
                 if text == "/тест":
                     message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}\n{memory()}")
-    except Exception as error:
-        print(error)
