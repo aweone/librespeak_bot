@@ -47,11 +47,11 @@ funcgraph = ["funcgraph", "/funcgraph", "/fg", "fg"]
 funcgraph3d = ["funcgraph3d", "/funcgraph3d", "/fg3d", "fg3d"]
 upvote = ["+", "плюс", "согл", "жиза", "согласен", "плюсую", "умножаю"]
 downvote = ["-","минус", "несогл"]
-getrating = ["рейтинг", "соцрейтинг"]
+getrating = ["рейтинг", "соцрейтинг", "/рейтинг", "/соцрейтинг"]
 upvotereaction = ["плюс один миска рис", "партия выдать один кошка жена", "партия выдать мешок риса"]
 downvotereaction = ["минус один миска рис", "партия забрать один кошка жена", "партия забрать мешок риса"]
 while 1:
-    if True:
+    try:
         for event in longpoll.listen():
             #print(event.object)
             if event.type == VkBotEventType.MESSAGE_NEW:
@@ -681,3 +681,5 @@ while 1:
                 
                 if text == "/тест":
                     message(f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}\n{memory()}")
+    except Exception as error:
+        print(error)
