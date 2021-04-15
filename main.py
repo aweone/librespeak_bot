@@ -4,21 +4,21 @@ import time
 import json
 from vk_api.bot_longpoll import VkBotEventType
 from auth import vk, longpoll, vkAdmin, GROUP_ID
-from chatSettings import settings
-from chatAdmin import get_admin
-from captchaNew import get_captcha
+from chat_settings import settings
+from chat_admin import get_admin
+from captcha_new import get_captcha
 from uptime import upTime
 from pathlib import Path
-from qrGen import qrgen
-from qrDecode import qrdecode
-from functionGraph import graph, graph3d
-from helpMsg import helpmsg
+from qr_gen import qrgen
+from qr_decode import qrdecode
+from function_graph import graph, graph3d
+from help_msg import helpmsg
 from wiki import Wiki
 from currency import exchangeRate
-from cryptoCurrency import cryptocurrency
+from crypto_currency import cryptocurrency
 from abuse import insult
-from githubapi import getGitHubAccInfo
-from Memory import memory
+from github_api import getGitHubAccInfo
+from memory import memory
 # from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
 

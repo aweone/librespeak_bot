@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 import random
 import os
 import string
-from colorList import colors
+from color_list import colors
 from auth import vk
 import vk_api
 
