@@ -6,11 +6,10 @@ from vk_api.bot_longpoll import VkBotEventType
 from auth import vk, longpoll, vkAdmin, GROUP_ID
 from chat_settings import settings
 from chat_admin import get_admin
-from captcha_new import get_captcha
+from captcha import get_captcha
 from uptime import upTime
 from pathlib import Path
-from qr_gen import qrgen
-from qr_decode import qrdecode
+from qr import qrgen, qrdecode
 from function_graph import graph, graph3d
 from help_msg import helpmsg
 from wiki import Wiki
