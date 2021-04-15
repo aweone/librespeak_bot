@@ -1,10 +1,13 @@
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 import random
 import os
+import string
 from colorList import colors
-from charList import chars
 from auth import vk
 import vk_api
+
+
+chars = string.ascii_lowercase + string.digits
 
 
 def get_captcha():
