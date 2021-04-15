@@ -4,9 +4,7 @@ import os
 from colorList import colors
 from charList import chars
 from auth import vk
-import random, vk_api
-
-
+import vk_api
 
 
 def get_captcha():

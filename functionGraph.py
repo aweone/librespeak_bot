@@ -5,6 +5,7 @@ from sympy.plotting import plot3d
 import matplotlib.pyplot
 import vk_api
 
+
 def graph(expression):
     x = symbols(expression)
     image = plot(expression, show=False)
@@ -19,6 +20,7 @@ def graph(expression):
     attachment = f'photo{owner_id}_{photo_id}_{access_key}'
     del x, image, upload, photo
     return attachment
+
 
 def graph3d(expression):
     x = symbols(expression)
@@ -35,6 +37,6 @@ def graph3d(expression):
     del x, image, upload, photo
     return attachment
 
-#for i in range(1, 100):
+# for i in range(1, 100):
 #    graph3d("3*x**y")
 #    print(i)

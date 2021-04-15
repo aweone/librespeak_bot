@@ -1,5 +1,7 @@
 import wikipedia
 from requests import get
+
+
 def Wiki(requestName, sentences=4):
     try:
         wikipedia.set_lang("ru")
@@ -8,8 +10,7 @@ def Wiki(requestName, sentences=4):
         title = page.title
         similar = "\n".join(wikipedia.search(requestName))
         url = get("https://clck.ru/--?url=" + page.url).text
-    except:
+    except Exception:
         return "По вашему запросу ничего не найдено!"
-    
-    return f"{title}\n{text}\nПодробнее: {url}\n\nПохожие запросы:\n{similar}"
 
+    return f"{title}\n{text}\nПодробнее: {url}\n\nПохожие запросы:\n{similar}"

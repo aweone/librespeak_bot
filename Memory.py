@@ -7,4 +7,4 @@ def memory():
     memoryused = round(int(memoryfile[2].split()[1])/1024/2)
     memorystr = f'Занято памяти {memoryused}мб. из {memorytotal}мб.'
     return memorystr
-#print(memory())
+# print(memory())
