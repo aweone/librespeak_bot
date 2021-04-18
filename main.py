@@ -145,7 +145,7 @@ while 1:
                         settings[str(peer_id - 2000000000)] = {"captcha_on": "False", "casino_on": "True", "greeting_on": "True",
                                                                "wife": "True", "qr": "True", "math": "True", "rate": "True", "wiki": "True", "github": "True"}
 
-                        with open(f'chat_settings.json', 'w') as f:
+                        with open('config/chat_settings.json', 'w') as f:
                             json.dump(settings, f)
 
                 elif (
@@ -459,7 +459,7 @@ while 1:
 
                     if text.split()[0] == "/казино":
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/casino.json') as f:
+                        with open('config/casino.json') as f:
                             casino = json.load(f)
 
                         gain = 0
@@ -505,12 +505,12 @@ while 1:
                                     f"ахахаха, лох, проиграл, твой баланс {balance} руб")
                                 casino[str(user_id)] = str(balance)
 
-                            with open(f'{Path.home()}/.config/librespeak_bot/casino.json', "w") as f:
+                            with open('config/casino.json', "w") as f:
                                 json.dump(casino, f)
 
                     if text.split()[0] == "/баланс":
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/casino.json') as f:
+                        with open('config/casino.json') as f:
                             casino = json.load(f)
 
                         if str(user_id) not in casino:
@@ -553,7 +553,7 @@ while 1:
                                 "компартия разочарован вы! вас подкручивать соц рейтинг!")
                             continue
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                        with open('config/socrating.json') as f:
                             socrating = json.load(f)
 
                         if str(user_id) not in socrating:
@@ -564,7 +564,7 @@ while 1:
                         message(
                             f"{random.choice(upvotereaction)}\nсоц рейтинг повышен! удар!")
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
+                        with open('config/socrating.json', "w") as f:
                             json.dump(socrating, f)
                 if (
                     event.message.text
@@ -582,7 +582,7 @@ while 1:
                                 "компартия разочарован вы! вас подкручивать соц рейтинг!")
                             continue
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                        with open('config/socrating.json') as f:
                             socrating = json.load(f)
 
                         if str(user_id) not in socrating:
@@ -593,14 +593,14 @@ while 1:
                         message(
                             f"{random.choice(downvotereaction)}\nсоц рейтинг понижен! удар!")
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
+                        with open('config/socrating.json', "w") as f:
                             json.dump(socrating, f)
                 if (
                     event.message.text
                     and event.message.text.split()[0].lower() in getrating
                 ):
                     print(event)
-                    with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
+                    with open('config/socrating.json') as f:
                         socrating = json.load(f)
                     print(socrating)
                     if str(event.message.from_id) not in socrating:
@@ -737,7 +737,7 @@ while 1:
                         if params[0] in settings.get(str(peer_id - 2000000000)) and (params[1] == "True" or params[1] == "False"):
                             settings[str((peer_id - 2000000000))
                                      ].update({params[0]: params[1]})
-                            with open(f'chat_settings.json', 'w') as f:
+                            with open('config/chat_settings.json', 'w') as f:
                                 json.dump(settings, f)
                             message(
                                 f'изменение параметра \"{params[0]}\"\nтекущее значение \"{params[1]}\"')
@@ -754,7 +754,7 @@ while 1:
                         settings[str(peer_id - 2000000000)] = {"captcha_on": "False", "casino_on": "True", "greeting_on": "True",
                                                                "wife": "True", "qr": "True", "math": "True", "rate": "True", "wiki": "True", "github": "True"}
 
-                        with open(f'chat_settings.json', 'w') as f:
+                        with open('config/chat_settings.json', 'w') as f:
                             json.dump(settings, f)
                         settingsStr = ""
 

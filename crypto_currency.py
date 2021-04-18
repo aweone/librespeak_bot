@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 try:
-    with open(f'crypto_settings.json', 'r', encoding='utf-8') as f:
+    with open(f'config/crypto_settings.json', 'r', encoding='utf-8') as f:
         settings = json.load(f)
     cryptocompare.cryptocompare._set_api_key_parameter(settings["token"])
 except FileNotFoundError:
