@@ -1,10 +1,9 @@
 import time
+from datetime import timedelta
 
 
-def upTime(startTime):
-    days = int((time.time() - startTime)//86400)
-    hours = int((time.time() - startTime - days * 86400)//3600)
-    minuts = int((time.time() - startTime - days * 86400 - hours * 3600)//60)
-    seconds = int((time.time() - startTime - days *
-                  86400 - hours * 3600 - minuts * 60))
-    return(f"{days}д. {hours}ч. {minuts}м. {seconds}c.")
+def upTime(start_time):
+    delta = timedelta(seconds=time.time() - start_time)
+    total_minutes, seconds = divmod(delta.seconds, 60)
+    hours, minutes = divmod(total_minutes, 60)
+    return f"{delta.days}д. {hours}ч. {minutes}м. {seconds}c."
