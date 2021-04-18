@@ -145,7 +145,7 @@ while 1:
                         settings[str(peer_id - 2000000000)] = {"captcha_on": "False", "casino_on": "True", "greeting_on": "True",
                                                                "wife": "True", "qr": "True", "math": "True", "rate": "True", "wiki": "True", "github": "True"}
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
+                        with open(f'chat_settings.json', 'w') as f:
                             json.dump(settings, f)
 
                 elif (
@@ -737,7 +737,7 @@ while 1:
                         if params[0] in settings.get(str(peer_id - 2000000000)) and (params[1] == "True" or params[1] == "False"):
                             settings[str((peer_id - 2000000000))
                                      ].update({params[0]: params[1]})
-                            with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
+                            with open(f'chat_settings.json', 'w') as f:
                                 json.dump(settings, f)
                             message(
                                 f'изменение параметра \"{params[0]}\"\nтекущее значение \"{params[1]}\"')
@@ -754,7 +754,7 @@ while 1:
                         settings[str(peer_id - 2000000000)] = {"captcha_on": "False", "casino_on": "True", "greeting_on": "True",
                                                                "wife": "True", "qr": "True", "math": "True", "rate": "True", "wiki": "True", "github": "True"}
 
-                        with open(f'{Path.home()}/.config/librespeak_bot/chatSettings.json', 'w') as f:
+                        with open(f'chat_settings.json', 'w') as f:
                             json.dump(settings, f)
                         settingsStr = ""
 

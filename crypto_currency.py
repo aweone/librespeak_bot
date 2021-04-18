@@ -2,9 +2,13 @@ import cryptocompare
 import json
 from pathlib import Path
 
-with open(f'{Path.home()}/.config/librespeak_bot/cryptoSettings.json', 'r', encoding='utf-8') as f:
-    settings = json.load(f)
-cryptocompare.cryptocompare._set_api_key_parameter(settings["token"])
+try:
+    with open(f'crypto_settings.json', 'r', encoding='utf-8') as f:
+        settings = json.load(f)
+    cryptocompare.cryptocompare._set_api_key_parameter(settings["token"])
+except FileNotFoundError:
+    print("WARNING: Токен для модуля crypto_currency не указан")
+
 
 
 def cryptocurrency():
