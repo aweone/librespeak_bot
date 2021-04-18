@@ -7,12 +7,15 @@ from vk_api.bot_longpoll import VkBotLongPoll
 
 print("INFO: authentication...")
 
-GROUP_ID = os.getenv("BOT_ID")
+with open("config/bot_config.json", "r") as f:
+    data = json.load(f)
 
-vk_session = vk_api.VkApi(token=os.getenv("BOT_TOKEN"))
+GROUP_ID = data["bot"]["id"]
+
+vk_session = vk_api.VkApi(token=data["bot"]["token"])
 vk = vk_session.get_api()
 longpoll = VkBotLongPoll(vk_session, GROUP_ID)
 
-vkAdmin = vk_api.VkApi(token=os.getenv("ADMIN_TOKEN")).get_api()
+vkAdmin = vk_api.VkApi(token=data["admin"]["token"]).get_api()
 print("INFO: authentication is successful!")
 
