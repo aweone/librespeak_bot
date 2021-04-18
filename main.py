@@ -7,16 +7,16 @@ from auth import vk, longpoll, vkAdmin, GROUP_ID
 from chat_settings import settings
 from chat_admin import get_admin
 from captcha import get_captcha
-from uptime import upTime
+from uptime import uptime
 from pathlib import Path
 from qr import qrgen, qrdecode
 from function_graph import graph, graph3d
 from help_msg import helpmsg
-from wiki import Wiki
-from currency import exchangeRate
+from wiki import wiki
+from currency import exchange_rate
 from crypto_currency import cryptocurrency
 from abuse import insult
-from github_api import getGitHubAccInfo
+from github_api import get_gitbub_acc_info
 from memory import memory
 # from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
@@ -90,7 +90,7 @@ while 1:
                 peer_id = event.message.peer_id
                 if user_id == 213045391 and text:
                     if text == "/инф":
-                        message(f"бот работает, аптайм {upTime(timeup)}")
+                        message(f"бот работает, аптайм {uptime(timeup)}")
 
                     elif text == "/капча":
                         captcha_value = get_captcha()
@@ -396,7 +396,7 @@ while 1:
                         and settings[str(peer_id - 2000000000)]["github"] == "True"
                     )
                 ):
-                    message(getGitHubAccInfo(text.split()[1]))
+                    message(get_gitbub_acc_info(text.split()[1]))
                 if (
                     text
                     and text.startswith("/wiki")
@@ -407,10 +407,10 @@ while 1:
                     )
                 ):
                     if text.split()[-1].isdigit():
-                        message(Wiki(text[5:].replace(
+                        message(wiki(text[5:].replace(
                             text.split()[-1], ""), int(text.split()[-1])))
                     else:
-                        message(Wiki(text[5:]))
+                        message(wiki(text[5:]))
                 if (
                     text
                     and text.startswith("/курс")
@@ -421,14 +421,14 @@ while 1:
                     )
                 ):
                     if len(text.split()) > 1 and text.split()[1] == "-евро":
-                        rate = exchangeRate("EUR").value
+                        rate = exchange_rate("EUR").value
                         message(f"Курс евро {rate} руб.")
                     elif len(text.split()) > 1 and text.split()[1] == "-доллар":
-                        rate = exchangeRate("USD").value
+                        rate = exchange_rate("USD").value
                         message(f"Курс доллара {rate} руб.")
                     else:
-                        rateUSD = exchangeRate("USD").value
-                        rateEUR = exchangeRate("EUR").value
+                        rateUSD = exchange_rate("USD").value
+                        rateEUR = exchange_rate("EUR").value
                         message(
                             f"Курс Доллара США {rateUSD} руб, курс Евро {rateEUR} руб.")
                 if (
@@ -765,6 +765,6 @@ while 1:
 
                 if text == "/тест":
                     message(
-                        f"время ответа: {time.time() - startEterationTime}\nаптайм: {upTime(timeup)}\n{memory()}")
+                        f"время ответа: {time.time() - startEterationTime}\nаптайм: {uptime(timeup)}\n{memory()}")
     except Exception as error:
         print(error)

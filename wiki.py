@@ -2,7 +2,7 @@ import wikipedia
 from requests import get
 
 
-def Wiki(requestName, sentences=4):
+def wiki(requestName, sentences=4):
     try:
         wikipedia.set_lang("ru")
         page = wikipedia.page(requestName)

@@ -2,7 +2,7 @@ from requests import get
 from json import loads
 
 
-def getGitHubAccInfo(username):
+def get_gitbub_acc_info(username):
     account = loads(
         get(f"https://api.github.com/users/{username}").text.replace("'", '`'))
     if "message" in account:

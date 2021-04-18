@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 
 
-def upTime(start_time):
+def uptime(start_time):
     delta = timedelta(seconds=time.time() - start_time)
     total_minutes, seconds = divmod(delta.seconds, 60)
     hours, minutes = divmod(total_minutes, 60)
