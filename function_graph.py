@@ -36,7 +36,3 @@ def graph3d(expression):
     attachment = f'photo{owner_id}_{photo_id}_{access_key}'
     del x, image, upload, photo
     return attachment
-
-# for i in range(1, 100):
-#    graph3d("3*x**y")
-#    print(i)

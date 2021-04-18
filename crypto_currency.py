@@ -15,10 +15,7 @@ def cryptocurrency():
     (cryptocompare.get_price(["BTC", "LTC", "XMR", "ETH"], ["USD", "RUB"]))
     msg = ""
     for cc, value in cryptocompare.get_price(["BTC", "LTC", "XMR", "ETH"], ["USD", "RUB"]).items():
-        # print(a, b)
         USD = value["USD"]
         RUB = value["RUB"]
         msg += f"{cc} {USD} дол. ({RUB} руб.)\n"
     return msg
-
-# wprint(cryptocurrency())

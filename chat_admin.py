@@ -12,8 +12,6 @@ def get_admin(peerid, groupid):
                 admins.append(member["member_id"])
                 if member["member_id"] > 0:
                     admins_str += ("\n @id"+str(member["member_id"]))
-                # print(member["member_id"])
-        # print(members)
         return admins_str, admins
     except Exception:
         admins = []
