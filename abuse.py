@@ -1,8 +1,9 @@
-from requests import get
-from json import loads
+import requests
+
+
+_link = "https://evilinsult.com/generate_insult.php?lang=ru&type=json"
 
 
 def insult():
-    response = loads(get(
-        "https://evilinsult.com/generate_insult.php?lang=ru&type=json").text.replace("'", '"'))
-    return response["insult"]
+    response = requests.get(_link)
+    return response.json()["insult"]
