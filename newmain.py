@@ -184,9 +184,9 @@ while 1:
 
                             if str(downvote_user_id) not in socrating:
                                 socrating[str(downvote_user_id)] = str(0)
-                            socrating[str(downvote_user_id)] = str(int(socrating[str(downvote_user_id)])+1)
+                            socrating[str(downvote_user_id)] = str(int(socrating[str(downvote_user_id)]) - 1)
 
-                            message(f"{random.choice(upvotereaction)}\nсоц рейтинг повышен! удар!")
+                            message(f"{random.choice(downreaction)}\nсоц рейтинг понижен! удар!")
                             
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
                                 json.dump(socrating, f)
