@@ -21,6 +21,7 @@ from requests import get
 from base64 import *
 from hashlib import *
 from googletrans import Translator
+from ip import ipsearch
 #from uploadvk import upload
 vk_api.VkApi.RPS_DELAY = 1/20
 
@@ -155,12 +156,12 @@ while 1:
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
                                 socrating = json.load(f)
 
-                            if str(user_id) not in socrating:
-                                socrating[str(user_id)] = str(0)
-                            socrating[str(user_id)] = str(int(socrating[str(user_id)])+1)
+                            if str(upvote_user_id) not in socrating:
+                                socrating[str(upvote_user_id)] = str(0)
+                            socrating[str(upvote_user_id)] = str(int(socrating[str(upvote_user_id)])+1)
 
                             message(f"{random.choice(upvotereaction)}\nсоц рейтинг повышен! удар!")
-
+                            
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
                                 json.dump(socrating, f)
                             continue
@@ -169,24 +170,24 @@ while 1:
                     ):
                         if "reply_message" in event.message.keys() or event.message.fwd_messages:
                             if "reply_message" in event.message:
-                                user_id = event.message.reply_message["from_id"]
+                                downvote_user_id = event.message.reply_message["from_id"]
 
                             elif event.message.fwd_messages:
-                                user_id = event.message.fwd_messages[0]["from_id"]
+                                downvote_user_id = event.message.fwd_messages[0]['from_id']
                             
-                            if user_id == event.message.from_id:
+                            if user_id == downvote_user_id:
                                 message("компартия разочарован вы! вас подкручивать соц рейтинг!")
                                 continue
 
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
                                 socrating = json.load(f)
 
-                            if str(user_id) not in socrating:
-                                socrating[str(user_id)] = str(0)
-                            socrating[str(user_id)] = str(int(socrating[str(user_id)])-1)
+                            if str(downvote_user_id) not in socrating:
+                                socrating[str(downvote_user_id)] = str(0)
+                            socrating[str(downvote_user_id)] = str(int(socrating[str(downvote_user_id)])+1)
 
-                            message(f"{random.choice(downvotereaction)}\nсоц рейтинг понижен! удар!")
-
+                            message(f"{random.choice(upvotereaction)}\nсоц рейтинг повышен! удар!")
+                            
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
                                 json.dump(socrating, f)
                             continue
@@ -227,6 +228,8 @@ while 1:
                             for link in command.split()[1:]:
                                 link_list = link_list + f"{link} => {get('https://clck.ru/--?url=' + link).text}\n"
                             message(link_list)
+                        if command.lower().startswith(("ip", "айпи", "вычисли")):
+                            message(ipsearch(command.split()[1]))
 
                         if command.lower().startswith("b16encode"):
                             message(f"Результат: {b16encode(' '.join(command.split()[1:]).encode()).decode('utf-8')}")
@@ -269,7 +272,7 @@ while 1:
                         if command.lower().startswith("sha512"):
                             message(f"Результат: {sha512(' '.join(command.split()[1:]).encode()).hexdigest()}")
 
-                        if command.lower().startswith("перевод"):
+                        if command.lower().startswith(("перевод", "переведи", "переводчик")):
                             if command.split()[-1].startswith("-"):
                                 result = Translator().translate(" ".join(command.split()[1:-1]), dest = command.split()[-1].replace("-","")).text
                             else:
@@ -323,6 +326,7 @@ while 1:
                                 message(f'{random.choice(think)} {date.tm_year}.{date.tm_mon}.{date.tm_mday} в {date.tm_hour}:{date.tm_min}:{date.tm_sec} {" ".join(command.split()[1:])}')
                             except Exception as error:
                                 message('ошибка!\nкоманда "когда" завершилась с ошибкой\n{error}')
+                        
                         if event.from_chat and command.lower().startswith("кто") and not command.lower().startswith(admins):
                             try:
                                 randomUserId = random.choice(vk.messages.getConversationMembers(
@@ -373,7 +377,6 @@ while 1:
                                     message('у меня нет админки((\n не могу получить список участников')
                                 else:
                                     message(f'ошибочка\nкоманда "кому" завершилась с ошибкой\n {error}')
-
 
                         if (
                             event.message.attachments
@@ -604,6 +607,7 @@ while 1:
 
                                 with open(f'{Path.home()}/.config/librespeak_bot/socrating.json', "w") as f:
                                     json.dump(socrating, f)
+                        
                         if (
                             command.lower().startswith(getrating)
                         ):
@@ -611,9 +615,20 @@ while 1:
                             with open(f'{Path.home()}/.config/librespeak_bot/socrating.json') as f:
                                 socrating = json.load(f)
                             print(socrating)
-                            if str(event.message.from_id) not in socrating:
-                                socrating[str(event.message.from_id)] = str(0)
-                            message(f"ваш рейтинг {socrating[str(event.message.from_id)]}! удар!")
+                            if "reply_message" in event.message.keys():
+                                requested_rating_id = event.message.reply_message["from_id"]
+                            elif event.message.fwd_messages:
+                                requested_rating_id = event.message.fwd_messages[0]["from_id"]
+                            else:
+                                requested_rating_id = user_id
+
+                            if str(requested_rating_id) not in socrating:
+                                socrating[str(requested_rating_id)] = str(0)
+                            message(f"рейтинг {socrating[str(requested_rating_id)]}! удар!")
+                        
+                        if command.lower().startswith(("загугли","гугл")):
+                            message(f"google.com/search?q={'%20'.join(command.split()[1:])}")
+                        
                         if (
                             command.lower().startswith(ban)
                             and user_id not in get_admin(peer_id, GROUP_ID)[1]
